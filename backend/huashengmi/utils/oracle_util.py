@@ -9,6 +9,14 @@ class OracleUtil(object):
         pass
 
     @staticmethod
+    def get_connection():
+        ID = config.oracle_config['ID']
+        pwd = config.oracle_config['pwd']
+        host = config.oracle_config['host']
+        connection = cx_Oracle.connect(ID, pwd, host)
+        return connection
+
+    @staticmethod
     def get_cursor():
         ID = config.oracle_config['ID']
         pwd = config.oracle_config['pwd']

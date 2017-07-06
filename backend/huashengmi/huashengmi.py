@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from controller.controller import JiduSalary, DepartAndMonth, DepartAndCategory, YearSalary, Download
 from config import BASE_URL
+from controller.UserControl import UserLogin,UserLogout
 reload(sys)
 sys.setdefaultencoding("utf-8")
 logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
@@ -25,6 +26,9 @@ api.add_resource(DepartAndMonth, BASE_URL + 'depart_month/')
 api.add_resource(DepartAndCategory, BASE_URL + 'depart_categary/')
 api.add_resource(YearSalary, BASE_URL + 'year_salary/')
 api.add_resource(Download, BASE_URL + 'download/')
+api.add_resource(UserLogin,BASE_URL + 'login/')
+api.add_resource(UserLogout,BASE_URL + 'logout/')
+
 
 if __name__ == '__main__':
     logger.info('启动app')
