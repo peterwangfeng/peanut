@@ -2,7 +2,7 @@
 from flask_restful import Resource,marshal_with
 from service.data_service import DataService
 from flask import request, make_response
-from utils.flask_util import response, CJsonEncoder
+from utils.flask_util import response, CJsonEncoder, auth
 import json
 import time
 import tablib
@@ -14,6 +14,7 @@ class Download(Resource):
         self.service = DataService()
 
     #导出excel
+    @auth.login_required
     def get(self):
         """
         导出年度工资excel表格
@@ -43,6 +44,7 @@ class JiduSalary(Resource):
 
     #数据接口请求
     @marshal_with(response)
+    @auth.login_required
     def get(self):
         """
         返回各季度总工资情况
@@ -62,6 +64,7 @@ class DepartAndMonth(Resource):
 
     #数据接口请求
     @marshal_with(response)
+    @auth.login_required
     def get(self):
         """
         返回各部门各月份工资情况
@@ -89,6 +92,7 @@ class DepartAndCategory(Resource):
 
     #数据接口请求
     @marshal_with(response)
+    @auth.login_required
     def get(self):
         """
         返回单月各部门各项工资情况
@@ -114,6 +118,7 @@ class YearSalary(Resource):
 
     #数据接口请求
     @marshal_with(response)
+    @auth.login_required
     def get(self):
         """
         返回员工年度工资汇总
