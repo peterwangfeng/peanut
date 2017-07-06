@@ -1,13 +1,10 @@
 # coding=utf-8
-from flask import g
 from flask_restful import fields
-import time, base64, hmac
-from flask_httpauth import HTTPTokenAuth
 import json
 import datetime
 import decimal
 from datetime import date
-from service.oracle_service import OracleService
+
 
 class CJsonEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -19,7 +16,6 @@ class CJsonEncoder(json.JSONEncoder):
             return str(obj)
         else:
             return json.JSONEncoder.default(self, obj)
-
 
 response = {
     'code': fields.Integer(default=100),

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
-from service.oracle_service import OracleService
-
+from utils.oracle_util import OracleUtil
 
 class DataDao(object):
     def __init__(self):
@@ -17,7 +16,7 @@ class DataDao(object):
     @staticmethod
     def query_jidu_salary(years=[str(time.localtime()[0])]):
 
-        cursor = OracleService.get_cursor()
+        cursor = OracleUtil.get_cursor()
         year_str = ",".join(years)
         sql = """
             SELECT SUBSTR(MONTH,0,4) as YEAR,
@@ -29,13 +28,12 @@ class DataDao(object):
             WHERE SUBSTR(MONTH,0,4) in (%s)
             GROUP BY SUBSTR(MONTH,0,4)
         """ % year_str
-        result = OracleService.query_list_result(cursor, sql)
-
+        result = OracleUtil.query_dict_result(cursor, sql)
         return result
 
     @staticmethod
     def query_depart_and_month(months=[], depart=[], year=str(time.localtime()[0])):
-        cursor = OracleService.get_cursor()
+        cursor = OracleUtil.get_cursor()
         months_str = ",".join(months)
         depart_str = DataDao.append_with_douhao(depart)
         sql = """
@@ -46,8 +44,11 @@ class DataDao(object):
             LEFT JOIN "PERFORMANCE_USER" b
             ON a.USER_ID = b.ID
             WHERE SUBSTR(MONTH,0,4) = %s
+        """ % year
+        if len(months) > 0:
+            sql += """
             AND SUBSTR(MONTH,6,2) in (%s)
-        """ % (year, months_str)
+            """ % months_str
         if len(depart) > 0:
             sql += """
                 AND OFFICE_ID in (%s)
@@ -57,49 +58,50 @@ class DataDao(object):
             sql += """
                 GROUP BY SUBSTR(MONTH,6,2), OFFICE_ID
             """
-        result = OracleService.query_yangshi1_result(cursor, sql)
-
-        return result
+        cursor.execute(sql)
+        return [cursor.fetchall(), cursor.description]
 
     @staticmethod
-    def query_depart_and_categary(year=str(time.localtime()[0]), month='05'):
-        cursor = OracleService.get_cursor()
+    def query_depart_and_categary(year=str(time.localtime()[0]), month='', depart=''):
+        cursor = OracleUtil.get_cursor()
         sql = """
             SELECT b.OFFICE_ID,
             PROGRAMID,
-            SUM(SALARY) AS total
+            SUM(TO_Number(SALARY)) AS total
             FROM "PERFORMANCE_RESULT_SALARY_copy" a
             LEFT JOIN "PERFORMANCE_USER" b
             ON a.USER_ID = b.ID
-            WHERE SUBSTR(MONTH,0,4) = %s
-	        AND SUBSTR(MONTH,6,2) = %s
+            LEFT JOIN "PERFORMANCE_PROGRAM" c 
+            on PROGRAMID = c.ID
+            WHERE OFFICE_ID = '%s'
+            AND SUBSTR(MONTH,0,4) = %s
+        """ % (depart, year)
+        if len(month) > 0:
+            sql += """
+                AND SUBSTR(MONTH,6,2) = %s
+            """ % month
+        sql += """
             GROUP BY PROGRAMID, OFFICE_ID
-        """ % (year, month)
-        result = OracleService.query_yangshi1_result(cursor, sql)
-        return result
+        """
+        cursor.execute(sql)
+        return [cursor.fetchall(), cursor.description]
 
     @staticmethod
     def query_year_salary(year=str(time.localtime()[0])):
-        cursor = OracleService.get_cursor()
+        cursor = OracleUtil.get_cursor()
+
         sql = """
-            SELECT PROGRAM_NAME, USER_ID, b.NAME, c.NAME, SUM(SALARY) AS amount
+            SELECT USER_ID, b.NAME, OFFICE_ID, PROGRAMID, 
+            SUM(case when c.INCLUDE_WAY = 0 then TO_Number(SALARY) else TO_Number(SALARY)*(-1) end) 
+            AS amount
             FROM "PERFORMANCE_RESULT_SALARY_copy" a
             LEFT JOIN "PERFORMANCE_USER" b
             ON a.USER_ID = b.ID
-	        LEFT JOIN "SYS_OFFICE" c
-	        ON b.OFFICE_ID = c.ID
-	        LEFT JOIN "PERFORMANCE_PROGRAM" d
-            ON PROGRAMID = d.ID
+            LEFT JOIN "PERFORMANCE_PROGRAM" c 
+            on PROGRAMID = c.ID
             WHERE SUBSTR(MONTH,0,4) = %s
-            GROUP BY SUBSTR(MONTH,0,4), USER_ID, b.NAME, PROGRAM_NAME, c.NAME
+            GROUP BY SUBSTR(MONTH,0,4), USER_ID, PROGRAMID, b.NAME, OFFICE_ID
         """ % year
+
         cursor.execute(sql)
-        sql_result = cursor.fetchall()
-
-        return sql_result
-
-dao = DataDao()
-#print dao.query_depart_and_month(['05','06'],['5ee2506d6b584e70a4267ba0e893aec3','b5d1800d8a77463cac04522c8dac692a'])
-#print dao.query_depart_and_categary('2017', '05')
-#print dao.query_year_salary(2017)
-
+        return [cursor.fetchall(), cursor.description]
