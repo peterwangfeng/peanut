@@ -1,12 +1,16 @@
 #coding=utf-8
 import cx_Oracle
 import config as config
-
+import datetime
 
 class OracleUtil(object):
 
     def __init__(self):
         pass
+
+    @staticmethod
+    def getYear(date=datetime.date.today()):
+        return str(date)[0:4]
 
     @staticmethod
     def get_connection():

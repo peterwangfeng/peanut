@@ -1,19 +1,25 @@
 # -*- coding: utf-8 -*-
 from dao.data_dao import DataDao
 import config
-import time
 
 
 class DataService(object):
 
     def __init__(self):
         self.dao = DataDao()
+        self.depart_short_name_dict = self.dao.query_depart_dict()
+        for key, value in self.depart_short_name_dict.items():
+            self.depart_short_name_dict[key]['NAME'] = config.depart_short_name_dict[key]['NAME']
+        self.jixiao_short_name_dict = self.dao.query_jixiao_dict()
+        for key, value in self.jixiao_short_name_dict.items():
+            self.jixiao_short_name_dict[key]['PROGRAM_NAME'] = config.jixiao_short_name_dict[key]['PROGRAM_NAME']
+            self.jixiao_short_name_dict[key]['category'] = config.jixiao_short_name_dict[key]['category']
 
     def jidu_salary_service(self, years):
         sql_result = self.dao.query_jidu_salary(years)
         #将数据库获取的数据按照接口标准重新组织
         seasons = ['SEASON1', 'SEASON2', 'SEASON3', 'SEASON4']
-        if len(years) > 1:
+        if len(years) > 1: #查看多年工资情况
             year_name = [year + '年' for year in years]
             return_result = {'category': {'years': year_name, 'seasons': ['第一季度', '第二季度', '第三季度', '第四季度']},
                              'dimen': ['season', 'year', 'index']}
@@ -29,27 +35,31 @@ class DataService(object):
                 i += 1
             return_result['series'] = series
             return return_result
-        else:
+        else: #查看某一年4季度工资情况
             series = []
-            dict = sql_result.values()[0]
-            sum = 0
-            for season in seasons:
-                series.append([dict[season], 0])
-                sum += dict[season]
-            for index in series:
-                index[1] = sum / 4
+            if len(sql_result) > 0:
+                salary_dict = sql_result.values()[0]
+                sum = 0
+                for season in seasons:
+                    series.append([salary_dict[season], 0])
+                    sum += salary_dict[season]
+                for index in series:
+                    index[1] = sum / 4
+            else:
+                series = [[0,0]]*len(seasons)
             return_result = {'category' : ['实际工资', '预算工资'],
                              'series' : series}
             return return_result
 
-    def depart_and_month_service(self, months=[], depart=[], year=str(time.localtime()[0])):
+    def depart_and_month_service(self, months=[], depart=[], year='2017'):
         return_result = self.dao.query_depart_and_month(months, depart, year)
         # 将数据库获取的数据按照接口标准重新组织
-        sql_result = DataService.query_yangshi1_result(return_result[0], return_result[1])
+        sql_result = DataService.query_yangshi1_result(return_result[0], return_result[1],
+                                                       self.depart_short_name_dict, self.jixiao_short_name_dict)
         if len(months) > 0:
-            depart_ID_list = [value['ID'] for key,value in config.depart_short_name_dict.items()]
-            depart_dict = dict([(value['ID'], value['short_name']) for key, value in config.depart_short_name_dict.items()])
-            depart_name_dict = dict([(value['ID'], value['name']) for key, value in config.depart_short_name_dict.items()])
+            depart_ID_list = [value['ID'] for key,value in self.depart_short_name_dict.items()]
+            depart_dict = dict([(value['ID'], value['SHORT_NAME']) for key, value in self.depart_short_name_dict.items()])
+            depart_name_dict = dict([(value['ID'], value['NAME']) for key, value in self.depart_short_name_dict.items()])
             series = []
             depart_name_list = []
             depart_shortname_list = []
@@ -79,17 +89,21 @@ class DataService(object):
                     else:
                         value[key2] = year + '年' + value2 + '月'
                 value['SUM'] = round(sum,2)
-            return sql_result
+            keys = sql_result.keys()
+            keys.sort()
+            return [sql_result[key] for key in keys]
+            return sql_result.values()
 
-    def depart_and_categary_service(self, year=str(time.localtime()[0]), month='01', depart=''):
+    def depart_and_categary_service(self, year='2017', month='01', depart=''):
         return_result = self.dao.query_depart_and_categary(year, month, depart)
         # 将数据库获取的数据按照接口标准重新组织
-        sql_result = DataService.query_yangshi1_result(return_result[0], return_result[1])
+        sql_result = DataService.query_yangshi1_result(return_result[0], return_result[1],
+                                                       self.depart_short_name_dict, self.jixiao_short_name_dict)
         depart_name_dict = {}
-        for key, value in config.depart_short_name_dict.items():
-            depart_name_dict[value['ID']] = value['name']
+        for key, value in self.depart_short_name_dict.items():
+            depart_name_dict[value['ID']] = value['NAME']
         jixiao_category_dict = {}
-        for key, value in config.jixiao_short_name_dict.items():
+        for key, value in self.jixiao_short_name_dict.items():
             jixiao_category_dict[value['ID']] = value['category']
         depart_name = depart_name_dict[depart]
         series = [0, 0, 0, 0, 0]
@@ -110,23 +124,25 @@ class DataService(object):
                          'depart_name': depart_name}
         return return_result
 
-    def year_salary(self, year=str(time.localtime()[0]), cur_page=1, page_size=10):
+    def year_salary(self, year='2017', cur_page=1, page_size=10):
         # 因为数据只有两百多条，所以采用全部获取再截取的方式获取分页数据
         start = (cur_page - 1) * page_size
         end = cur_page * page_size
         return_result = self.dao.query_year_salary(year)
-        sql_result = DataService.query_yangshi2_result(return_result[0], return_result[1])
+        sql_result = DataService.query_yangshi2_result(return_result[0], return_result[1],
+                                                       self.depart_short_name_dict, self.jixiao_short_name_dict)
         return {'data': sql_result[start:end], 'total_num': len(sql_result)}
 
-    def year_salary_for_download(self, year=str(time.localtime()[0])):
+    def year_salary_for_download(self, year='2017'):
         return_result = self.dao.query_year_salary(year)
-        sql_result = DataService.query_yangshi2_result(return_result[0], return_result[1])
+        sql_result = DataService.query_yangshi2_result(return_result[0], return_result[1],
+                                                       self.depart_short_name_dict, self.jixiao_short_name_dict)
         jixiao_dict = {}
         jixiao_name_dict = {}
-        for key, value in config.jixiao_short_name_dict.items():
-            jixiao_dict[value['ID']] = value['short_name']
-            jixiao_name_dict[value['ID']] = value['name']
-        jixiao_ID_list = [0]*len(config.jixiao_short_name_dict)
+        for key, value in self.jixiao_short_name_dict.items():
+            jixiao_dict[value['ID']] = value['SHORT_NAME']
+            jixiao_name_dict[value['ID']] = value['PROGRAM_NAME']
+        jixiao_ID_list = [0]*len(self.jixiao_short_name_dict)
         for id in jixiao_dict:
             jixiao_ID_list[config.jixiao_name_list.index(jixiao_name_dict[id])] = id
         jixiao_short_name_list = []
@@ -134,9 +150,9 @@ class DataService(object):
         for id in jixiao_ID_list:
             jixiao_short_name_list.append(jixiao_dict[id])
             jixiao_name_list.append(jixiao_name_dict[id])
-        header_list = ['USER_ID', 'NAME', 'OFFICE_ID']
+        header_list = ['USER_ID', 'OFFICE_ID', 'NAME']
         header_list.extend(jixiao_short_name_list)
-        header_name_list = ['员工编号', '姓名', '部门']
+        header_name_list = ['员工编号', '部门', '姓名']
         header_name_list.extend(jixiao_name_list)
         header_list.append('TOTAL')
         header_name_list.append('合计')
@@ -151,20 +167,24 @@ class DataService(object):
             series.append(list)
         return [header_name_list, series]
 
+    def get_depart(self):
+        depart_dict = [{'NAME' : value['NAME'], 'ID' : value['ID']} for key, value in self.depart_short_name_dict.items()]
+        return depart_dict
+
     # 样式一
     @staticmethod
-    def query_yangshi1_result(sql_result, description):
+    def query_yangshi1_result(sql_result, description,
+                              depart_short_name_dict, jixiao_short_name_dict):
         u"""重组织数据
             """
-
         result_dict = {}
         keys = [row[0] for row in description]
         depart_dict = {}
-        for key, value in config.depart_short_name_dict.items():
-            depart_dict[value['ID']] = value['short_name']
+        for key, value in depart_short_name_dict.items():
+            depart_dict[value['ID']] = value['SHORT_NAME']
         jixiao_dict = {}
-        for key, value in config.jixiao_short_name_dict.items():
-            jixiao_dict[value['ID']] = value['short_name']
+        for key, value in jixiao_short_name_dict.items():
+            jixiao_dict[value['ID']] = value['SHORT_NAME']
         for row in sql_result:
             if row[0] not in result_dict:
                 result_dict[row[0]] = {keys[0]: row[0]}
@@ -177,19 +197,19 @@ class DataService(object):
 
     # 样式二
     @staticmethod
-    def query_yangshi2_result(sql_result, description):
+    def query_yangshi2_result(sql_result, description, depart_short_name_dict, jixiao_short_name_dict):
         u"""重组织数据
             """
         result_dict = {}
         keys = [row[0] for row in description]
         depart_dict = {}
         depart_name_dict = {}
-        for key, value in config.depart_short_name_dict.items():
-            depart_dict[value['ID']] = value['short_name']
-            depart_name_dict[value['ID']] = value['name']
+        for key, value in depart_short_name_dict.items():
+            depart_dict[value['ID']] = value['SHORT_NAME']
+            depart_name_dict[value['ID']] = value['NAME']
         jixiao_dict = {}
-        for key, value in config.jixiao_short_name_dict.items():
-            jixiao_dict[value['ID']] = value['short_name']
+        for key, value in jixiao_short_name_dict.items():
+            jixiao_dict[value['ID']] = value['SHORT_NAME']
         for row in sql_result:
             if row[2] in depart_dict and row[3] in jixiao_dict:
                 if int(row[0]) not in result_dict:
