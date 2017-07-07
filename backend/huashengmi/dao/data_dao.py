@@ -1,20 +1,14 @@
-# -*- coding: utf-8 -*-
-import time
+# -*- coding: gbk -*-
 from utils.oracle_util import OracleUtil
+import os
+os.environ['nls_lang'] = 'AMERICAN_AMERICA.ZHS16GBK'
 
 class DataDao(object):
     def __init__(self):
         pass
 
     @staticmethod
-    def append_with_douhao(list):
-        result = ""
-        for a in list:
-            result += "'" + str(a) + "',"
-        return result[:-1]
-
-    @staticmethod
-    def query_jidu_salary(years=[str(time.localtime()[0])]):
+    def query_jidu_salary(years=['2017']):
 
         cursor = OracleUtil.get_cursor()
         year_str = ",".join(years)
@@ -24,7 +18,7 @@ class DataDao(object):
             SUM(case when SUBSTR(MONTH,6,2) in ('04','05','06') then TO_Number(SALARY) else 0 end) AS season2,
             SUM(case when SUBSTR(MONTH,6,2) in ('07','08','09') then TO_Number(SALARY) else 0 end) AS season3,
             SUM(case when SUBSTR(MONTH,6,2) in ('10','11','12') then TO_Number(SALARY) else 0 end) AS season4
-            FROM "PERFORMANCE_USER_SALARY_copy"
+            FROM "PERFORMANCE_USER_SALARY"
             WHERE SUBSTR(MONTH,0,4) in (%s)
             GROUP BY SUBSTR(MONTH,0,4)
         """ % year_str
@@ -32,15 +26,15 @@ class DataDao(object):
         return result
 
     @staticmethod
-    def query_depart_and_month(months=[], depart=[], year=str(time.localtime()[0])):
+    def query_depart_and_month(months=[], depart=[], year='2017'):
         cursor = OracleUtil.get_cursor()
         months_str = ",".join(months)
-        depart_str = DataDao.append_with_douhao(depart)
+        depart_str = ",".join(("'" + month + "'") for month in months)
         sql = """
             SELECT SUBSTR(MONTH,6,2) as MONTH,
             b.OFFICE_ID,
             SUM(SALARY) AS total
-            FROM "PERFORMANCE_USER_SALARY_copy" a
+            FROM "PERFORMANCE_USER_SALARY" a
             LEFT JOIN "PERFORMANCE_USER" b
             ON a.USER_ID = b.ID
             WHERE SUBSTR(MONTH,0,4) = %s
@@ -62,13 +56,13 @@ class DataDao(object):
         return [cursor.fetchall(), cursor.description]
 
     @staticmethod
-    def query_depart_and_categary(year=str(time.localtime()[0]), month='', depart=''):
+    def query_depart_and_categary(year='2017', month='', depart=''):
         cursor = OracleUtil.get_cursor()
         sql = """
             SELECT b.OFFICE_ID,
             PROGRAMID,
             SUM(TO_Number(SALARY)) AS total
-            FROM "PERFORMANCE_RESULT_SALARY_copy" a
+            FROM "PERFORMANCE_RESULT_SALARY" a
             LEFT JOIN "PERFORMANCE_USER" b
             ON a.USER_ID = b.ID
             LEFT JOIN "PERFORMANCE_PROGRAM" c 
@@ -87,14 +81,13 @@ class DataDao(object):
         return [cursor.fetchall(), cursor.description]
 
     @staticmethod
-    def query_year_salary(year=str(time.localtime()[0])):
+    def query_year_salary(year='2017'):
         cursor = OracleUtil.get_cursor()
-
         sql = """
             SELECT USER_ID, b.NAME, OFFICE_ID, PROGRAMID, 
             SUM(case when c.INCLUDE_WAY = 0 then TO_Number(SALARY) else TO_Number(SALARY)*(-1) end) 
             AS amount
-            FROM "PERFORMANCE_RESULT_SALARY_copy" a
+            FROM "PERFORMANCE_RESULT_SALARY" a
             LEFT JOIN "PERFORMANCE_USER" b
             ON a.USER_ID = b.ID
             LEFT JOIN "PERFORMANCE_PROGRAM" c 
@@ -104,4 +97,23 @@ class DataDao(object):
         """ % year
 
         cursor.execute(sql)
-        return [cursor.fetchall(), cursor.description]
+        result = cursor.fetchall()
+        return [result, cursor.description]
+
+    @staticmethod
+    def query_depart_dict():
+        cursor = OracleUtil.get_cursor()
+        sql = """
+            SELECT SHORT_NAME, ID, NAME FROM "SYS_OFFICE"
+        """
+        result = OracleUtil.query_dict_result(cursor, sql)
+        return result
+
+    @staticmethod
+    def query_jixiao_dict():
+        cursor = OracleUtil.get_cursor()
+        sql = """
+                    SELECT SHORT_NAME, ID, PROGRAM_NAME FROM "PERFORMANCE_PROGRAM"
+                """
+        result = OracleUtil.query_dict_result(cursor, sql)
+        return result

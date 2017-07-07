@@ -5,7 +5,7 @@ import logging
 from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
-from controller.controller import JiduSalary, DepartAndMonth, DepartAndCategory, YearSalary, Download
+from controller.controller import JiduSalary, DepartAndMonth, DepartAndCategory, YearSalary, Download, GetDepart
 from config import BASE_URL
 from controller.UserControl import UserLogin,UserLogout
 reload(sys)
@@ -20,15 +20,23 @@ CORS(app, supports_credentials=True)
 api = Api(app)
 
 
-#接口
+# 接口
+# 某年度4季度工资情况
 api.add_resource(JiduSalary, BASE_URL + 'jidu_salary/')
+# 各部门各月份工资情况
 api.add_resource(DepartAndMonth, BASE_URL + 'depart_month/')
-api.add_resource(DepartAndCategory, BASE_URL + 'depart_categary/')
+# 各部门各项绩效情况
+api.add_resource(DepartAndCategory, BASE_URL + 'depart_category/')
+# 员工全年工资绩效汇总
 api.add_resource(YearSalary, BASE_URL + 'year_salary/')
+# 导出为excel表格
 api.add_resource(Download, BASE_URL + 'download/')
-api.add_resource(UserLogin,BASE_URL + 'login/')
-api.add_resource(UserLogout,BASE_URL + 'logout/')
-
+# 登陆
+api.add_resource(UserLogin, BASE_URL + 'login/')
+# 登出
+api.add_resource(UserLogout, BASE_URL + 'logout/')
+# 获取部门名称对应ID
+api.add_resource(GetDepart, BASE_URL + 'get_depart/')
 
 if __name__ == '__main__':
     logger.info('启动app')

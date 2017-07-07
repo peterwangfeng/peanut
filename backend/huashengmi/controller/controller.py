@@ -3,6 +3,7 @@ from flask_restful import Resource,marshal_with
 from service.data_service import DataService
 from flask import request, make_response
 from utils.flask_util import response, CJsonEncoder, auth
+from utils.oracle_util import OracleUtil
 import json
 import time
 import tablib
@@ -14,7 +15,6 @@ class Download(Resource):
         self.service = DataService()
 
     #导出excel
-    @auth.login_required
     def get(self):
         """
         导出年度工资excel表格
@@ -23,7 +23,7 @@ class Download(Resource):
         """
         args = request.args.to_dict()
         year = str(time.localtime()[0])
-        if 'year' in args.keys():
+        if args.has_key('year'):
             year = args['year']
         result = self.service.year_salary_for_download(year)
         headers = tuple(result[0])
@@ -62,7 +62,7 @@ class DepartAndMonth(Resource):
     def __init__(self):
         self.service = DataService()
 
-    #数据接口请求
+    # 数据接口请求
     @marshal_with(response)
     @auth.login_required
     def get(self):
@@ -73,13 +73,13 @@ class DepartAndMonth(Resource):
         """
         args = request.args.to_dict()
         months = []
-        if 'months' in args.keys():
+        if args.has_key('months'):
             months = args['months'].split(',')
         depart = []
-        if 'depart' in args.keys():
+        if args.has_key('depart'):
             depart = args['depart'].split(',')
-        year = str(time.localtime()[0])
-        if 'year' in args.keys():
+        year = OracleUtil.getYear()
+        if args.has_key('year'):
             year = args['year']
         result = self.service.depart_and_month_service(months, depart, year)
         return {'data': json.loads(json.dumps(result, cls=CJsonEncoder))}
@@ -101,10 +101,10 @@ class DepartAndCategory(Resource):
         """
         args = request.args.to_dict()
         month = ''
-        if 'month' in args.keys():
+        if args.has_key('month'):
             month = args['month']
-        year = str(time.localtime()[0])
-        if 'year' in args.keys():
+        year = OracleUtil.getYear()
+        if args.has_key('year'):
             year = args['year']
         depart = args['depart']
         result = self.service.depart_and_categary_service(year, month, depart)
@@ -118,7 +118,7 @@ class YearSalary(Resource):
 
     #数据接口请求
     @marshal_with(response)
-    @auth.login_required
+    #@auth.login_required
     def get(self):
         """
         返回员工年度工资汇总
@@ -126,14 +126,30 @@ class YearSalary(Resource):
         :return: {} 对象
         """
         args = request.args.to_dict()
-        year = str(time.localtime()[0])
+        year = OracleUtil.getYear()
         cur_page = 1
-        if 'cur_page' in args.keys():
+        if args.has_key('cur_page'):
             cur_page = int(args['cur_page'])
         page_size = 10
-        if 'page_size' in args.keys():
+        if args.has_key('page_size'):
             page_size = int(args['page_size'])
-        if 'year' in args.keys():
+        if args.has_key('year'):
             year = args['year']
         result = self.service.year_salary(year, cur_page, page_size)
+        return {'data': json.loads(json.dumps(result, cls=CJsonEncoder))}
+
+
+class GetDepart(Resource):
+    def __init__(self):
+        self.service = DataService()
+
+    #数据接口请求
+    @marshal_with(response)
+    @auth.login_required
+    def get(self):
+        """
+        返回部门名称表
+        :return: [] 对象
+        """
+        result = self.service.get_depart()
         return {'data': json.loads(json.dumps(result, cls=CJsonEncoder))}
