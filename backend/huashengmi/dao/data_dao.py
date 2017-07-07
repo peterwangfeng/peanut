@@ -1,4 +1,4 @@
-# -*- coding: GBK -*-
+# -*- coding: gbk -*-
 from utils.oracle_util import OracleUtil
 import os
 os.environ['nls_lang'] = 'AMERICAN_AMERICA.ZHS16GBK'

@@ -150,9 +150,9 @@ class DataService(object):
         for id in jixiao_ID_list:
             jixiao_short_name_list.append(jixiao_dict[id])
             jixiao_name_list.append(jixiao_name_dict[id])
-        header_list = ['USER_ID', 'OFFICE_ID', 'NAME']
+        header_list = ['NAME', 'USER_ID', 'OFFICE_ID']
         header_list.extend(jixiao_short_name_list)
-        header_name_list = ['员工编号', '部门', '姓名']
+        header_name_list = ['姓名', '员工编号', '部门']
         header_name_list.extend(jixiao_name_list)
         header_list.append('TOTAL')
         header_name_list.append('合计')
