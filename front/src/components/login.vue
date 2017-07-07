@@ -4,7 +4,6 @@
       <span class="title">绩效工资分析系统</span>
     </div>
     <div class="login">
-      <p>登&nbsp;录</p>
       <div class="login-content" v-loading="loading" element-loading-text="正在登录中,请稍后..." :lock="true">
         <div class="form-horizontal">
           <div class="form-group">
@@ -47,22 +46,32 @@
     },
     methods: {
       login() {
-        this.$router.push({path: '/home'});
+//        this.$router.push({path: '/home/first'});
         this.loading = true;
         let regex = /[a-zA-Z0-9]/g;
         let regexName = regex.test(this.user.name);
         let regexPwd = regex.test(this.user.password);
-        let url = '';
-        let data = {user_name: this.user.name, password: this.user.password};
+        let url = URL.LOGIN;
+        let data = {login_name: this.user.name, password: this.user.password};
         data = JSON.stringify(data);
         if (this.user.name !== '' && regexName && this.user.password !== '' && regexPwd) {
-          api.post(url, data).then(res => {
-             this.loading = false;
+          this.$http.post(url, data).then(res => {
+            this.loading = false;
+            if (res.data.code === 100) {
+              let target = res.data.data;
+              console.log(target);
+              window.localStorage.setItem('token', target.token);
+              window.localStorage.setItem('name', target.user_name);
+              window.localStorage.setItem('user_id', target.user_id);
+              this.$router.push({path: '/home/first'});
+            } else if (res.data.code === 2001) {
+              this.$message('用户名不存在');
+            } else if (res.data.code === 2002) {
+              this.$message('密码错误,请重新输入');
+            }
           });
-        } else if (!regexName) {
-          this.$message('请输入用户名');
-        } else if (!regexPwd) {
-          this.$message('请输入密码');
+        } else if (!regexName || !regexPwd) {
+          this.$message('请输入合法字符');
         } else {
           this.$message('用户名和密码不能为空');
         }
@@ -74,19 +83,21 @@
 <style scoped lang="scss">
   .container-fluid {
     height: 100vh;
-    background-color: rgb(27, 49, 93);
+    background: url("../assets/bg.jpg") no-repeat center center;
+    background-size: 100vw 100vh;
     position: absolute;
     width: 100vw;
     .text-center {
-      margin-top: 100px;
+      margin-top: 140px;
       font-size: 30px;
       font-weight: bolder;
     }
   }
 
   .login {
+    padding-top: 20px;
     width: 380px;
-    height: 270px;
+    height: 200px;
     margin: 20px auto;
     background: #fff;
     border-radius: 5px;
@@ -159,7 +170,6 @@
     width: 100%;
     font-size: 30px !important;
   }
-
 
   .el-input {
     display: block;
