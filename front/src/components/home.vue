@@ -16,13 +16,11 @@
   import Heads from './head';
   import Sidebar from './sidebar';
   export default {
-    data () {
-      return {};
-    },
+    name: 'home',
     components: {
       Heads,
       Sidebar
-    },
+    }
   };
 </script>
 
@@ -42,9 +40,7 @@
 
   .content {
     margin-top: 50px;
-    padding-top: 10px;
-    padding-left: 230px;
-    padding-right: 10px;
+    padding: 20px 25px 0 195px;
     color: #000;
   }
 </style>

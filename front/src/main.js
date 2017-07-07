@@ -7,7 +7,7 @@ import VueResource from 'vue-resource';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-default/index.css';
 import VueHighcharts from 'vue-highcharts';
-import 'bootstrap/dist/css/bootstrap.css';
+import './assets/libs/bootstrap-3.3.0/css/bootstrap.min.css';
 import './assets/libs/font-awesome-4.7.0/css/font-awesome.min.css';
 Vue.config.productionTip = false;
 Vue.use(VueResource);

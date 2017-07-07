@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "echarts": "^3.6.2",
     "element-ui": "^1.3.7",
     "highcharts": "^v5.0.12",
     "jquery": "^3.2.1",

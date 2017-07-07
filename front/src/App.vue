@@ -5,16 +5,20 @@
 </template>
 
 <script>
-export default {
-  name: 'app'
-}
+  export default {
+    name: 'app'
+  }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #fff;
-}
+  body {
+    background-color: rgba(11, 27, 67, .8);
+  }
+
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #fff;
+  }
 </style>
