@@ -1,16 +1,27 @@
 <template>
   <el-card>
-    <h3 class="text-center">年收入汇总表
-      <el-button style='margin-bottom:20px;float:right' type="primary" size="mini" @click="handleDownload">
+    <h3 class="text-center">年收入汇总表</h3>
+    <div style="text-align: right">
+      <el-button :type="type==='year'?'primary':''" @click="handleType('year')">按年</el-button>
+      <el-button :type="type==='month'?'primary':''" @click="handleType('month')">按月</el-button>
+      <el-date-picker
+        v-model="value1"
+        align="right"
+        :type="type"
+        @change="handle"
+        :clearable="false"
+        placeholder="选择日期">
+      </el-date-picker>&nbsp;
+      <el-button style='margin-bottom:20px;float:right' type="primary" @click="handleDownload">
         <img src="../assets/icon_export.png" alt="">
         导出excel
       </el-button>
-    </h3>
+    </div>
     <el-table :data="tableData" style="width: 100%;" border :row-class-name="tableRowClassName" v-loading="loading"
               element-loading-text="拼命加载中">
-      <el-table-column label="序号" prop="USER_ID" width="70" align="center"></el-table-column>
-      <el-table-column label="部门" prop="OFFICE_ID" width="200" align="center"></el-table-column>
-      <el-table-column label="姓名" prop="NAME" width="100" align="center"></el-table-column>
+      <el-table-column label="员工编号" prop="USER_ID" fixed="left" width="120" align="center"></el-table-column>
+      <el-table-column label="部门" prop="OFFICE_ID" fixed="left" width="200" align="center"></el-table-column>
+      <el-table-column label="姓名" fixed="left" prop="NAME" width="100" align="center"></el-table-column>
       <el-table-column label="基本工资" align="center">
         <el-table-column label="基本工资" prop="JBGZ" width="100" align="center"></el-table-column>
         <el-table-column label="年限工资" prop="NXGZ" width="100" align="center"></el-table-column>
@@ -54,7 +65,7 @@
         <el-table-column label="季度考评及季度专项奖" prop="JDKPJJDZXJ" align="center" width="200"></el-table-column>
         <el-table-column label="季度专项奖" prop="JDZXJ" align="center" width="110"></el-table-column>
       </el-table-column>
-      <el-table-column label="应发合计" prop="yfhj" width="100"></el-table-column>
+      <el-table-column label="应发合计" prop="SUM" width="100"></el-table-column>
       <!--<el-table-column label="扣款" align="center">
         <el-table-column label="扣款" prop="kk" align="center"></el-table-column>
         <el-table-column label="扣税" prop="ks" align="center"></el-table-column>
@@ -82,6 +93,8 @@
     },
     data() {
       return {
+        type: 'year',
+        value1: new Date(),
         loading: true,
         tableData: [],
         total: null
@@ -91,6 +104,14 @@
       this.init();
     },
     methods: {
+      handleType(value) {
+        this.type = value;
+        this.init();
+      },
+      handle(value) {
+        this.loading = true;
+        this.init();
+      },
       tableRowClassName(row, index) {
         if (index % 2 === 1) {
           return 'info-row';
@@ -100,24 +121,52 @@
         return '';
       },
       init(currentPage = 1) {
+        if (this.value1 === null || this.value1 === undefined) {
+          this.loading = false;
+          return;
+        }
+
         let url = URL.YEAR_SALARY;
-        let params = {cur_page: currentPage, page_size: 10};
-        api.get(url, params).then(res => {
-          this.loading = false;
-          window.console.log(res);
-          this.tableData = res.data;
-          this.total = res.total_num;
-        }).catch(err => {
-          this.loading = false;
-        });
+        if (this.type === 'month') {
+          let year = this.value1.getFullYear();
+          let month = this.value1.getMonth() + 1;
+          month = month < 10 ? `0${month}` : month;
+          let params = {year: year, month: month, cur_page: currentPage, page_size: 10};
+          api.get(url, params).then(res => {
+            this.loading = false;
+            window.console.log(res);
+            this.tableData = res.data;
+            this.total = res.total_num;
+          }).catch(err => {
+            this.loading = false;
+          });
+        } else if (this.type === 'year') {
+          let year = this.value1.getFullYear();
+          let month = this.value1.getMonth();
+          let params = {year: year, cur_page: currentPage, page_size: 10};
+          api.get(url, params).then(res => {
+            this.loading = false;
+            window.console.log(res);
+            this.tableData = res.data;
+            this.total = res.total_num;
+          }).catch(err => {
+            this.loading = false;
+          });
+        }
+
       },
       next(currentPage) {
         this.loading = true;
         this.init(currentPage);
       },
       handleDownload() {
-        let year = new Date().getFullYear();
-        location.href = `${URL.DOWNLOAD}?year=${year}`;
+        let year = this.value1.getFullYear();
+        let month = this.value1.getMonth() + 1;
+        month = month < 10 ? `0${month}` : month;
+        if (this.type === 'year') {
+          location.href = `${URL.DOWNLOAD}?year=${year}`;
+        } else if (this.type === 'month')
+          location.href = `${URL.DOWNLOAD}?year=${year}&month=${month}`;
       }
     }
   };
@@ -125,12 +174,17 @@
 <style>
   h3 {
     color: #42d5f6;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 
-  .el-button {
-    margin-top: 25px;
-    margin-bottom: 7px !important;
+  th.is-center.is-leaf {
+    color: #fff;
+    background-color: #20a0ff;
+  }
+
+  th.is-center.is-leaf div {
+    color: #fff;
+    background-color: #20a0ff;
   }
 
   img {
@@ -144,6 +198,7 @@
     margin-top: 10px;
     margin-bottom: 20px;
     text-align: center;
+    border-radius: 10px;
   }
 
   .el-table__header-wrapper {
@@ -181,7 +236,7 @@
   }
 
   .el-table .info-row {
-    background: rgba(32, 160, 255, .2) !important;
+    background: rgb(43, 179, 255) !important;
   }
 
   .el-table .positive-row {

@@ -50,8 +50,8 @@
 
       >
       .el-menu-item {
-        /*border-top: 1px solid #475669;*/
         border: none !important;
+        text-align: left !important;
       }
       .el-menu-item:hover {
         background-color: rgba(0, 0, 0, .3) !important;
@@ -60,6 +60,7 @@
         border-top: 1px solid #475669;
 
         .el-menu-item {
+          text-align: left !important;
           height: 40px !important;
           line-height: 40px !important;
           margin-top: -15px;
