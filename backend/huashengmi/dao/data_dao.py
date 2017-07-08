@@ -102,7 +102,6 @@ class DataDao(object):
 
         cursor.execute(sql)
         result = cursor.fetchall()
-        print result[0][1]
         return [result, cursor.description]
 
     @staticmethod

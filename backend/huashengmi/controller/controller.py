@@ -1,20 +1,21 @@
 # coding=utf-8
-from flask_restful import Resource,marshal_with
+from flask_restful import Resource, marshal_with
 from service.data_service import DataService
+from service.excel_service import XlsCreater
 from flask import request, make_response
 from utils.flask_util import response, CJsonEncoder, auth
 from utils.oracle_util import OracleUtil
 import json
 import time
 import tablib
+from config import conf_of_excel
 
 
 class Download(Resource):
-
     def __init__(self):
         self.service = DataService()
 
-    #导出excel
+    # 导出excel
     def get(self):
         """
         导出年度工资excel表格
@@ -26,23 +27,22 @@ class Download(Resource):
         if args.has_key('year'):
             year = args['year']
         result = self.service.year_salary_for_download(year)
-        headers = tuple(result[0])
+        headers = conf_of_excel
         rows = tuple(result[1])
-        data = tablib.Dataset(*rows, headers=headers)
+        xls_creator = XlsCreater()
+        data = xls_creator.insert_data(headers, rows)
 
-        resp = make_response(data.xlsx)
-        para = "attachment; filename=%s.xlsx" % year
+        resp = make_response(data)
+        para = "attachment; filename=%s.xls" % year
         resp.headers["Content-Disposition"] = para
         return resp
 
 
-
 class JiduSalary(Resource):
-
     def __init__(self):
         self.service = DataService()
 
-    #数据接口请求
+    # 数据接口请求
     @marshal_with(response)
     @auth.login_required
     def get(self):
@@ -58,7 +58,6 @@ class JiduSalary(Resource):
 
 
 class DepartAndMonth(Resource):
-
     def __init__(self):
         self.service = DataService()
 
@@ -86,11 +85,10 @@ class DepartAndMonth(Resource):
 
 
 class DepartAndCategory(Resource):
-
     def __init__(self):
         self.service = DataService()
 
-    #数据接口请求
+    # 数据接口请求
     @marshal_with(response)
     @auth.login_required
     def get(self):
@@ -112,13 +110,12 @@ class DepartAndCategory(Resource):
 
 
 class YearSalary(Resource):
-
     def __init__(self):
         self.service = DataService()
 
-    #数据接口请求
+    # 数据接口请求
     @marshal_with(response)
-    #@auth.login_required
+    @auth.login_required
     def get(self):
         """
         返回员工年度工资汇总
@@ -143,7 +140,7 @@ class GetDepart(Resource):
     def __init__(self):
         self.service = DataService()
 
-    #数据接口请求
+    # 数据接口请求
     @marshal_with(response)
     @auth.login_required
     def get(self):
