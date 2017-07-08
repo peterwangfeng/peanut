@@ -5,7 +5,7 @@ import json
 import datetime
 import decimal
 from datetime import date
-import time,hmac,base64,hashlib
+import time, hmac, base64, hashlib
 from flask_httpauth import HTTPTokenAuth
 from oracle_util import OracleUtil
 
@@ -21,11 +21,13 @@ class CJsonEncoder(json.JSONEncoder):
         else:
             return json.JSONEncoder.default(self, obj)
 
+
 response = {
     'code': fields.Integer(default=100),
     'msg': fields.String(default='请求成功'),
     'data': fields.Raw(default={})
 }
+
 
 class Factory(object):
     def __init__(self, db_type, module_name):
@@ -37,8 +39,8 @@ class Factory(object):
         obj = getattr(module, self.type + self.module_name)()
         return obj
 
-class Token(object):
 
+class Token(object):
     def generate_token(self, key, expire=3600):
         ts_str = str(time.time() + expire)
         ts_byte = ts_str.encode('utf-8')
@@ -47,7 +49,7 @@ class Token(object):
         b64_token = base64.urlsafe_b64encode(token.encode('utf-8'))
         return b64_token.decode('utf-8')
 
-    def verify_token(self,key,token):
+    def verify_token(self, key, token):
         token_str = base64.urlsafe_b64decode(token)
         token_list = token_str.split(':')
         if (len(token_list)) != 2:
@@ -65,19 +67,18 @@ class Token(object):
         # 验证token
 
 
-class Verfy(object):
+class Verify(object):
     @staticmethod
-    def validatePassword(plain_password,encrypted_password):
-        print plain_password,encrypted_password
+    def validate_password(plain_password, encrypted_password):
         salt = encrypted_password[:16].decode('hex')
-        #获取盐
+        # 获取盐
         sha_enc = hashlib.sha1()
         sha_enc.update(salt + plain_password)
         encrypted2 = sha_enc.digest()
-        #加盐计算sha1
-        #print encrypted2.encode('hex')
-        for i in range(1,1024):
-            #计算1023次
+        # 加盐计算sha1
+        # print encrypted2.encode('hex')
+        for i in range(1, 1024):
+            # 计算1023次
             sha1_num_enc = hashlib.sha1()
             sha1_num_enc.update(encrypted2)
             encrypted2 = sha1_num_enc.digest()
@@ -87,20 +88,20 @@ class Verfy(object):
             return False
 
 
-
 auth = HTTPTokenAuth(scheme='Token')
+
 
 @auth.verify_token
 def verify_token(token):
-    cursor=OracleUtil.get_cursor()
+    cursor = OracleUtil.get_cursor()
     sql = "SELECT ID from OA.SYS_USER WHERE TOKEN = '%s'" % token
-    result = OracleUtil.query_list_result(cursor,sql)
+    result = OracleUtil.query_list_result(cursor, sql)
     if result:
-        ID = result[0]['ID']
+        user_id = result[0]['ID']
     else:
         return False
-    if ID is not None and Token().verify_token(ID, str(token)):
-        g.user_id = ID
+    if user_id is not None and Token().verify_token(user_id, str(token)):
+        g.user_id = user_id
         return True
     else:
         return False

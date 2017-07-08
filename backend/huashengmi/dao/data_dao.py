@@ -102,7 +102,6 @@ class DataDao(object):
 
         cursor.execute(sql)
         result = cursor.fetchall()
-        print result[0][1]
         return [result, cursor.description]
 
     @staticmethod
@@ -120,7 +119,7 @@ class DataDao(object):
         cursor = OracleUtil.get_cursor()
 
         sql = """
-                    SELECT SHORT_NAME, ID, PROGRAM_NAME FROM "PERFORMANCE_PROGRAM"
+                    SELECT SHORT_NAME, ID, PROGRAM_NAME, CATEGORY  FROM "PERFORMANCE_PROGRAM"
                 """
         result = OracleUtil.query_dict_result(cursor, sql)
         return result

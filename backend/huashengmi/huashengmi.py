@@ -7,7 +7,8 @@ from flask_cors import CORS
 from flask_restful import Api
 from controller.controller import JiduSalary, DepartAndMonth, DepartAndCategory, YearSalary, Download, GetDepart
 from config import BASE_URL
-from controller.UserControl import UserLogin,UserLogout
+from controller.user_controller import UserLogin, UserLogout
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
@@ -18,7 +19,6 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 api = Api(app)
-
 
 # 接口
 # 某年度4季度工资情况
