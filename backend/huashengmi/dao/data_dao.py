@@ -84,9 +84,8 @@ class DataDao(object):
         return [cursor.fetchall(), cursor.description]
 
     @staticmethod
-    def query_year_salary(year='2017'):
+    def query_year_salary(year='2017', month=''):
         cursor = OracleUtil.get_cursor()
-
         sql = """
             SELECT USER_ID, b.NAME, OFFICE_ID, PROGRAMID, 
             SUM(case when c.INCLUDE_WAY = 0 then TO_Number(SALARY) else TO_Number(SALARY)*(-1) end) 
@@ -97,9 +96,16 @@ class DataDao(object):
             LEFT JOIN "PERFORMANCE_PROGRAM" c 
             on PROGRAMID = c.ID
             WHERE SUBSTR(MONTH,0,4) = %s
-            GROUP BY SUBSTR(MONTH,0,4), USER_ID, PROGRAMID, b.NAME, OFFICE_ID
         """ % year
-
+        if len(month) == 0:
+            sql += """
+                GROUP BY SUBSTR(MONTH,0,4), USER_ID, PROGRAMID, b.NAME, OFFICE_ID
+            """
+        else:
+            sql += """
+                AND SUBSTR(MONTH, 6, 2) = %s
+                GROUP BY SUBSTR(MONTH,0,4), USER_ID, PROGRAMID, b.NAME, OFFICE_ID
+            """ % month
         cursor.execute(sql)
         result = cursor.fetchall()
         return [result, cursor.description]
@@ -122,4 +128,15 @@ class DataDao(object):
                     SELECT SHORT_NAME, ID, PROGRAM_NAME, CATEGORY  FROM "PERFORMANCE_PROGRAM"
                 """
         result = OracleUtil.query_dict_result(cursor, sql)
+        return result
+
+    @staticmethod
+    def query_year_budget(year):
+        cursor = OracleUtil.get_cursor()
+
+        sql = """
+                    SELECT YEAR, SEASON1, SEASON2, SEASON3, SEASON4, TOTAL FROM "PERFERMANCE_BUDGET"
+                    WHERE YEAR = '%s'
+                """ % year
+        result = OracleUtil.query_list_result(cursor, sql)
         return result

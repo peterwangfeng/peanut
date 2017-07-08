@@ -26,14 +26,19 @@ class Download(Resource):
         year = str(time.localtime()[0])
         if args.has_key('year'):
             year = args['year']
-        result = self.service.year_salary_for_download(year)
+        month = ''
+        if args.has_key('month'):
+            month = args['month']
+        result = self.service.year_salary_for_download(year, month)
         headers = conf_of_excel
         rows = tuple(result[1])
         xls_creator = XlsCreater()
         data = xls_creator.insert_data(headers, rows)
-
         resp = make_response(data)
-        para = "attachment; filename=%s.xls" % year
+        if len(month) == 0:
+            para = "attachment; filename=%s.xls" % year
+        else:
+            para = "attachment; filename=%s%s.xls" % (year, month)
         resp.headers["Content-Disposition"] = para
         return resp
 
@@ -132,7 +137,10 @@ class YearSalary(Resource):
             page_size = int(args['page_size'])
         if args.has_key('year'):
             year = args['year']
-        result = self.service.year_salary(year, cur_page, page_size)
+        month = ''
+        if args.has_key('month'):
+            month = args['month']
+        result = self.service.year_salary(year, month, cur_page, page_size)
         return {'data': json.loads(json.dumps(result, cls=CJsonEncoder))}
 
 
