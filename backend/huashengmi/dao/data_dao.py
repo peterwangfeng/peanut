@@ -1,5 +1,8 @@
-# -*- coding: gbk -*-
+#coding: utf-8
 from utils.oracle_util import OracleUtil
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import os
 os.environ['nls_lang'] = 'AMERICAN_AMERICA.ZHS16GBK'
 
@@ -83,6 +86,7 @@ class DataDao(object):
     @staticmethod
     def query_year_salary(year='2017'):
         cursor = OracleUtil.get_cursor()
+
         sql = """
             SELECT USER_ID, b.NAME, OFFICE_ID, PROGRAMID, 
             SUM(case when c.INCLUDE_WAY = 0 then TO_Number(SALARY) else TO_Number(SALARY)*(-1) end) 
@@ -98,11 +102,13 @@ class DataDao(object):
 
         cursor.execute(sql)
         result = cursor.fetchall()
+        print result[0][1]
         return [result, cursor.description]
 
     @staticmethod
     def query_depart_dict():
         cursor = OracleUtil.get_cursor()
+
         sql = """
             SELECT SHORT_NAME, ID, NAME FROM "SYS_OFFICE"
         """
@@ -112,6 +118,7 @@ class DataDao(object):
     @staticmethod
     def query_jixiao_dict():
         cursor = OracleUtil.get_cursor()
+
         sql = """
                     SELECT SHORT_NAME, ID, PROGRAM_NAME FROM "PERFORMANCE_PROGRAM"
                 """

@@ -150,12 +150,14 @@ class DataService(object):
         for id in jixiao_ID_list:
             jixiao_short_name_list.append(jixiao_dict[id])
             jixiao_name_list.append(jixiao_name_dict[id])
-        header_list = ['NAME', 'USER_ID', 'OFFICE_ID']
+        header_list = ['USER_ID', 'OFFICE_ID', 'NAME']
         header_list.extend(jixiao_short_name_list)
-        header_name_list = ['姓名', '员工编号', '部门']
+        header_name_list = ['员工编号', '部门', '姓名']
         header_name_list.extend(jixiao_name_list)
         header_list.append('TOTAL')
         header_name_list.append('合计')
+        header_list.insert(-6, 'SUM')
+        header_name_list.insert(-6, '应发工资')
         header_dict = {}
         for i in range(len(header_list)):
             header_dict[header_list[i]] = i
@@ -163,7 +165,8 @@ class DataService(object):
         for row in sql_result:
             list = [0] * len(header_list)
             for key, value in row.items():
-                list[header_dict[key]] = value
+                if header_dict.has_key(key):
+                    list[header_dict[key]] = value
             series.append(list)
         return [header_name_list, series]
 
@@ -214,8 +217,11 @@ class DataService(object):
             if row[2] in depart_dict and row[3] in jixiao_dict:
                 if int(row[0]) not in result_dict:
                     depart_name = depart_name_dict[row[2]]
-                    result_dict[int(row[0])] = {keys[0]: row[0], keys[1]: row[1], keys[2]: depart_name, 'TOTAL' : 0}
+                    result_dict[int(row[0])] = {keys[0]: row[0], keys[1]: row[1],
+                                                keys[2]: depart_name, 'TOTAL': 0, 'SUM': 0}
                 jixiao_short_name = jixiao_dict[row[3]]
                 result_dict[int(row[0])][jixiao_short_name] = row[4]
                 result_dict[int(row[0])]['TOTAL'] += row[4]
+                if row[4] > 0:
+                    result_dict[int(row[0])]['SUM'] += row[4]
         return result_dict.values()
