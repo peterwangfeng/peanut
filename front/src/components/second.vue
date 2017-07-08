@@ -2,6 +2,15 @@
   <div>
     <el-card>
       <h3>公司各部门经费支出情况报表</h3>
+      <div class="text-right" style="text-align: right !important;">
+        <el-date-picker
+          v-model="value"
+          align="right"
+          type="year"
+          @change="handle"
+          placeholder="选择年">
+        </el-date-picker>
+      </div>
       <highcharts :options="column" v-loading="loading1" element-loading-text="拼命加载中,请稍后..."></highcharts>
     </el-card>
     <el-card>
@@ -44,6 +53,7 @@
     name: 'second',
     data() {
       return {
+        value: new Date(),
         loading1: true,
         loading: true,
         tableData: [],
@@ -98,99 +108,99 @@
           series: [{
             name: '',
             data: [],
-            color: '#9fe6ed'
+            color: '#61bd6d'
           }, {
             name: '',
             data: [],
-            color: '#56d3de'
+            color: '#1abc9c'
           }, {
             name: '',
             data: [],
-            color: '#3bbdcb'
+            color: '#54acd2'
           }, {
             name: '',
             data: [],
-            color: '#2a99a1'
+            color: '#2c82c9'
           }, {
             name: '',
             data: [],
-            color: '#3d6f4e'
+            color: '#9365b8'
           }, {
             name: '',
             data: [],
-            color: '#4c944c'
+            color: '#475577'
           }, {
             name: '',
             data: [],
-            color: '#c1d87a'
+            color: '#41a85f'
           }, {
             name: '',
             data: [],
-            color: '#e7ecab'
+            color: '#00a885'
           }, {
             name: '',
             data: [],
-            color: '#a4d4bf'
+            color: '#3d8eb9'
           }, {
             name: '',
             data: [],
-            color: '#89c79b'
+            color: '#2969b0'
           }, {
             name: '',
             data: [],
-            color: '#47a48a'
+            color: '#553982'
           }, {
             name: '',
             data: [],
-            color: '#3ab291'
+            color: '#28324e'
           }, {
             name: '',
             data: [],
-            color: '#2a99a1'
+            color: '#f7da64'
           }, {
             name: '',
             data: [],
-            color: '#3bbdcb'
+            color: '#fba026'
           }, {
             name: '',
             data: [],
-            color: '#56d3de'
+            color: '#eb6b56'
           }, {
             name: '',
             data: [],
-            color: '#9fe6ed'
+            color: '#e14938'
           }, {
             name: '',
             data: [],
-            color: '#2a99a1'
+            color: '#a38f84'
           }, {
             name: '',
             data: [],
-            color: '#9fe6ed'
+            color: '#ef2b33'
           }, {
             name: '',
             data: [],
-            color: '#56d3de'
+            color: '#fac51c'
           }, {
             name: '',
             data: [],
-            color: '#3bbdcb'
+            color: '#f37934'
           }, {
             name: '',
             data: [],
-            color: '#2a99a1'
+            color: '#d14841'
           }, {
             name: '',
             data: [],
-            color: '#3d6f4e'
+            color: '#b8312f'
           }, {
             name: '',
             data: [],
-            color: '#4c944c'
+            color: '#75706b'
           }, {
             name: '',
             data: [],
-            color: '#c1db7a'
+            color: '#853ad8'
           }]
         }
       };
@@ -199,15 +209,20 @@
       this.init();
     },
     methods: {
+      handle() {
+        this.loading = true;
+        this.init();
+      },
       init() {
         let url = URL.DEPART_MONTH;
-        api.getWithNoParams(url).then(res => {
+        let year = this.value.getFullYear();
+        let params1 = {year: year};
+        api.get(url, params1).then(res => {
           this.loading = false;
           this.tableData = res;
         });
-        let year = new Date().getFullYear();
-        let params = {year: year, months: '01,02,03,04,05,06,07,08,09,10,11,12'};
-        api.get(url, params).then(res => {
+        let params2 = {year: year, months: '01,02,03,04,05,06,07,08,09,10,11,12'};
+        api.get(url, params2).then(res => {
           this.loading = false;
           this.column.xAxis.categories = res.category.month;
           for (let i = 0; i < res.category.depart.length; i++) {
@@ -232,9 +247,13 @@
 
   .el-card {
     margin-top: 10px;
-    border-radius: 8px;
+    border-radius: 10px !important;
     margin-bottom: 10px;
     min-height: 100px;
+  }
+
+  .el-row {
+    text-align: right;
   }
 
   .el-table {

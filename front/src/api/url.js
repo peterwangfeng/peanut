@@ -7,9 +7,10 @@ const URL = {
   LOGIN: baseURL + 'login/',
   LOGOUT: baseURL + 'logout/',
   JD_SALARY: baseURL + 'jidu_salary/',
-  DEPART_MONTH: baseURL + 'depart_month',
-  DEPART_CATEGARY: baseURL + 'depart_categary',
-  YEAR_SALARY: baseURL + 'year_salary',
-  DOWNLOAD: baseURL + 'download'
+  DEPART_MONTH: baseURL + 'depart_month/',
+  DEPART_CATEGARY: baseURL + 'depart_category/',
+  YEAR_SALARY: baseURL + 'year_salary/',
+  DOWNLOAD: baseURL + 'download/',
+  GET_DEPART: baseURL + 'get_depart/'
 };
 export default URL;

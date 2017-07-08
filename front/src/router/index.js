@@ -50,12 +50,12 @@ Vue.http.interceptors.push((request, next) => {
   next(response => {
     let status = String(response.status);
     if (status.indexOf('4') === 0) {
-      MessageBox(
-        {title: '错误', message: '客户端错误'}
+      this.$message(
+        {type: 'info', message: '客户端错误'}
       );
     } else if (status.indexOf('5') === 0) {
-      MessageBox({
-        title: '错误', message: '服务器错误'
+      this.$message({
+        type: 'info', message: '服务器错误'
       });
     }
     return response;

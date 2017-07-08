@@ -2,7 +2,19 @@
   <div class="contain">
     <el-card>
       <h3 class="text-center">公司年度费用预算支出分析报表</h3>
-      <div style="width: 600px;height: 400px;" id="pie"></div>
+      <el-row>
+        <el-date-picker
+          v-model="value"
+          align="right"
+          type="year"
+          @change="handle"
+          placeholder="选择年份">
+        </el-date-picker>
+      </el-row>
+      <!--<div style="width: 600px;height: 400px;" id="pie"></div>-->
+      <el-row>
+        <IEcharts style="width: 600px;min-height: 400px;" :option="polar"></IEcharts>
+      </el-row>
     </el-card>
     <el-card>
       <h3 class="text-center">近10年的绩效工资支出分布报表</h3>
@@ -14,10 +26,15 @@
   import URL from '../api/url';
   import * as api from '../api/api';
   import echarts from 'echarts';
+  import IEcharts from 'vue-echarts-v3';
   export default {
     name: 'first',
+    components: {
+      IEcharts
+    },
     data() {
       return {
+        value: new Date(),
         column: {
           chart: {
             type: 'column',
@@ -147,18 +164,259 @@
             show: true,
             data: ['第一季度', '第二季度', '第三季度', '第四季度']
           }
+        },
+        polar: {
+          tooltip: {
+            formatter: "{a} <br/>{c} {b}"
+          },
+          series: [
+            {
+              name: '当前已使用',
+              type: 'gauge',
+              z: 5,
+              min: 0,
+              max: 300,
+              splitNumber: 10,
+              radius: '70%',
+              axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  width: 10,
+                  color: [[0.1, '#91c7ae'], [0.667, '#63869e'], [1, '#c23531']]
+                }
+              },
+              axisTick: {            // 坐标轴小标记
+                length: 15,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  color: 'auto'
+                }
+              },
+              splitLine: {           // 分隔线
+                length: 20,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                  color: 'auto'
+                }
+              },
+              title: {
+                textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                  fontWeight: 'bolder',
+                  fontSize: 20,
+                  fontStyle: 'italic'
+                }
+              },
+              detail: {
+                textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                  fontWeight: 'bolder'
+                }
+              },
+              data: [{value: 0, name: '万元'}]
+            },
+            {
+              name: '第一季度',
+              type: 'gauge',
+              center: ['15%', '50%'],    // 默认全局居中
+              radius: '40%',
+              min: 0,
+              max: 2,
+              startAngle: 150,
+              endAngle: 30,
+              splitNumber: 2,
+              axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  width: 8
+                }
+              },
+              axisTick: {            // 坐标轴小标记
+                splitNumber: 5,
+                length: 10,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  color: 'auto'
+                }
+              },
+              axisLabel: {
+                formatter: function (v) {
+                  /*console.log(v);
+                   switch (v + '') {
+                   case '0' :
+                   return '0';
+                   case '1' :
+                   return '第一季度';
+                   case '2' :
+                   return '40';
+                   }*/
+                }
+              },
+              splitLine: {           // 分隔线
+                length: 15,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                  color: 'auto'
+                }
+              },
+              pointer: {
+                width: 2
+              },
+              title: {
+                show: false
+              },
+              detail: {
+                show: false
+              },
+              data: [{value: 0, name: '万元'}]
+            },
+            {
+              name: '第二季度',
+              type: 'gauge',
+              center: ['85%', '50%'],    // 默认全局居中
+              radius: '40%',
+              min: 0,
+              max: 2,
+              startAngle: 150,
+              endAngle: 30,
+              splitNumber: 2,
+              axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  width: 8
+                }
+              },
+              axisTick: {            // 坐标轴小标记
+                splitNumber: 5,
+                length: 10,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  color: 'auto'
+                }
+              },
+              axisLabel: {
+                formatter: function (v) {
+                  /*switch (v + '') {
+                   case '0' :
+                   return '0';
+                   case '1' :
+                   return '第二季度';
+                   case '2' :
+                   return '50';
+                   }*/
+                }
+              },
+              splitLine: {           // 分隔线
+                length: 15,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                  color: 'auto'
+                }
+              },
+              pointer: {
+                width: 2
+              },
+              title: {
+                show: false
+              },
+              detail: {
+                show: false
+              },
+              data: [{value: 0, name: '万元'}]
+            },
+            {
+              name: '第三季度',
+              type: 'gauge',
+              center: ['15%', '50%'],    // 默认全局居中
+              radius: '40%',
+              min: 0,
+              max: 2,
+              startAngle: 330,
+              endAngle: 210,
+              splitNumber: 2,
+              axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  width: 8
+                }
+              },
+              axisTick: {            // 坐标轴小标记
+                show: false
+              },
+              axisLabel: {
+                formatter: function (v) {
+                  /* switch (v + '') {
+                   case '0' :
+                   return '0';
+                   case '1' :
+                   return '第三季度';
+                   case '2' :
+                   return '20';
+                   }*/
+                }
+              },
+              splitLine: {           // 分隔线
+                length: 15,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                  color: 'auto'
+                }
+              },
+              pointer: {
+                width: 2
+              },
+              title: {
+                show: false
+              },
+              detail: {
+                show: false
+              },
+              data: [{value: 0, name: '万元'}]
+            },
+            {
+              name: '第四季度',
+              type: 'gauge',
+              center: ['85%', '50%'],    // 默认全局居中
+              radius: '40%',
+              min: 0,
+              max: 2,
+              startAngle: 330,
+              endAngle: 210,
+              splitNumber: 2,
+              axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                  width: 8
+                }
+              },
+              axisTick: {            // 坐标轴小标记
+                show: false
+              },
+              axisLabel: {
+                formatter: function (v) {
+
+                }
+              },
+              splitLine: {           // 分隔线
+                length: 15,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                  color: 'auto'
+                }
+              },
+              pointer: {
+                width: 2
+              },
+              title: {
+                show: false
+              },
+              detail: {
+                show: false
+              },
+              data: [{value: 0, name: '万元'}]
+            }
+          ]
         }
       };
     },
     created() {
       this.init();
+      this.initPie();
     },
     mounted() {
-      this.$nextTick(function () {
-        this.initPie();
-      })
+      /* this.$nextTick(function () {
+       this.initPie();
+       });*/
     },
     methods: {
+      handle() {
+        this.initPie();
+      },
       init() {
         let url = URL.JD_SALARY;
         let params = {years: '2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022'};
@@ -174,16 +432,37 @@
         });
       },
       initPie() {
-        let myChart = echarts.init(document.getElementById('pie'));
+//        let myChart = echarts.init(document.getElementById('pie'));
         let url = URL.JD_SALARY;
-        let year = new Date().getFullYear();
+        let year = this.value.getFullYear();
         let params = {years: year};
+        let self = this;
         api.get(url, params).then(res => {
-          this.pie.radiusAxis.data = res.category;
+//          this.pie.radiusAxis.data = res.category;
+          let sea = ['第一季度', '第二季度', '第三季度', '第四季度'];
           for (let i = 0; i < res.series.length; i++) {
-            this.pie.series[i].data = res.series[i];
+            let max = res.series[i][0] > res.series[i][1] ? res.series[i][0] : res.series[i][1];
+            if (max === 0) {
+              max = 100;
+            }
+            this.polar.series[i].max = Number.parseInt(max) * 1.5;
+            if (i !== 0) {
+              self.polar.series[i].splitNumber = 4;
+              self.polar.series[i].axisLabel.formatter = (v) => {
+                switch (v + '') {
+                  case '0' :
+                    return '0';
+                  case this.polar.series[i].max / 2 + '':
+                    return sea[i - 1];
+                  case this.polar.series[i].max + '' :
+                    return self.polar.series[i].max;
+                }
+              };
+            }
+            console.log(this.polar.series[i].max);
+            this.polar.series[i].data[0].value = res.series[i][0];
           }
-          myChart.setOption(this.pie);
+//          myChart.setOption(this.pie);
         });
       }
     }
@@ -192,6 +471,11 @@
 <style scoped>
   .contain {
     height: 400px;
+  }
+
+  .el-row {
+    text-align: right;
+    margin-bottom: 20px;
   }
 
   h3 {
@@ -207,6 +491,10 @@
     margin-top: 10px;
     margin-bottom: 10px;
     transition: all .3s linear;
-    border-radius: 8px;
+    border-radius: 10px;
+  }
+
+  .vue-echarts {
+    margin: 10px auto;
   }
 </style>

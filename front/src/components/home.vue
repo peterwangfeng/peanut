@@ -40,7 +40,7 @@
 
   .content {
     margin-top: 50px;
-    padding: 20px 25px 0 195px;
+    padding: 20px 25px 0 192px;
     color: #000;
   }
 </style>

@@ -12,9 +12,11 @@ export const get = function (url, params) {
         if (res.data.code === 100) {
           resolve(res.data.data)
         }
-      })
+      }).catch(err => {
+      reject(err);
+    })
   })
-}
+};
 
 export const getWithNoParams = function (url) {
   return new Promise((resolve, reject) => {
