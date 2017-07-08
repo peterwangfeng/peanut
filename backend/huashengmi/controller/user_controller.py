@@ -4,7 +4,7 @@ from service.user_service import UserService
 from flask import request
 from utils.flask_util import response
 from utils.flask_util import auth
-from config import StatusCode
+from config import StatusCode, BASE_URL
 
 
 class UserLogin(Resource):
@@ -29,9 +29,22 @@ class UserLogin(Resource):
         if user_name and password:
             result = self.service.login(user_name, password)
             if result and result[0] is True:
-                return {'code': StatusCode.LOGIN_SUCCESS, 'data': {'user_name': result[1]['NAME'],
-                                                                   'token': result[1]['TOKEN'],
-                                                                   'user_id': result[1]['ID']}}
+                if 'type' not in data.keys() \
+                        or int(data['type']) == StatusCode.WEB_LOGIN:
+                    return {'code': StatusCode.LOGIN_SUCCESS, 'data': {'user_name': result[1]['NAME'],
+                                                                       'token': result[1]['TOKEN'],
+                                                                       'user_id': result[1]['ID']}}
+                elif 'type' in data.keys() \
+                        and int(data['type']) == StatusCode.ONE_AUTH_LOGIN:
+                    return {'code': StatusCode.LOGIN_SUCCESS,
+                            'data': {
+                                'user_name': result[1]['NAME'],
+                                'token': result[1]['TOKEN'],
+                                'user_id': result[1]['ID'],
+                                'redirect_url': '/head/first'
+                            }}
+                else:
+                    return {'code': StatusCode.LOGIN_FAIL_PARAMETER_ERROR}
             else:
                 return {'code': result[1]}
         else:

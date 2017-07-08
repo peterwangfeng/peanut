@@ -8,12 +8,7 @@ class DataService(object):
     def __init__(self):
         self.dao = DataDao()
         self.depart_short_name_dict = self.dao.query_depart_dict()
-        for key, value in self.depart_short_name_dict.items():
-            self.depart_short_name_dict[key]['NAME'] = config.depart_short_name_dict[key]['NAME']
         self.jixiao_short_name_dict = self.dao.query_jixiao_dict()
-        for key, value in self.jixiao_short_name_dict.items():
-            self.jixiao_short_name_dict[key]['PROGRAM_NAME'] = config.jixiao_short_name_dict[key]['PROGRAM_NAME']
-            self.jixiao_short_name_dict[key]['category'] = config.jixiao_short_name_dict[key]['category']
 
     def jidu_salary_service(self, years):
         sql_result = self.dao.query_jidu_salary(years)
@@ -41,14 +36,14 @@ class DataService(object):
                 salary_dict = sql_result.values()[0]
                 sum = 0
                 for season in seasons:
-                    series.append([salary_dict[season], 0])
-                    sum += salary_dict[season]
+                    series.append([round(salary_dict[season] / 10000, 2), 0])
+                    sum += round(salary_dict[season] / 10000, 2)
                 for index in series:
                     index[1] = sum / 4
+                series.insert(0, [sum, sum])
             else:
-                series = [[0,0]]*len(seasons)
-            return_result = {'category' : ['实际工资', '预算工资'],
-                             'series' : series}
+                series = [[0,0]]*len(seasons + 1)
+            return_result = {'series' : series}
             return return_result
 
     def depart_and_month_service(self, months=[], depart=[], year='2017'):
@@ -104,7 +99,7 @@ class DataService(object):
             depart_name_dict[value['ID']] = value['NAME']
         jixiao_category_dict = {}
         for key, value in self.jixiao_short_name_dict.items():
-            jixiao_category_dict[value['ID']] = value['category']
+            jixiao_category_dict[value['ID']] = value['CATEGORY']
         depart_name = depart_name_dict[depart]
         series = [0, 0, 0, 0, 0]
         if len(sql_result.values()) > 0:
@@ -144,7 +139,7 @@ class DataService(object):
             jixiao_name_dict[value['ID']] = value['PROGRAM_NAME']
         jixiao_ID_list = [0]*len(self.jixiao_short_name_dict)
         for id in jixiao_dict:
-            jixiao_ID_list[config.jixiao_name_list.index(jixiao_name_dict[id])] = id
+            jixiao_ID_list[config.jixiao_name_list.index(jixiao_dict[id])] = id
         jixiao_short_name_list = []
         jixiao_name_list = []
         for id in jixiao_ID_list:

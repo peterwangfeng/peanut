@@ -57,6 +57,7 @@ class XlsCreater(object):
             if i['children']:
                 for child in i['children']:
                     self.worksheet.write(start_row + 1, start_col + count, child, self.header_style)
+                    self.worksheet.col(start_col + count).width = len(child)*256
                     count += 1
                 self.worksheet.write_merge(start_row, start_row, start_col, start_col + count - 1, i['name'],
                                            self.header_style)
@@ -69,14 +70,14 @@ class XlsCreater(object):
         return start_row + 2, 0
 
     def insert_data(self, header_conf, rows):
-        start_row, start_col = self._write_header(header_conf)
+        self._write_header(header_conf)
         max_length = self._write_rows(rows)
         self.worksheet.col(1).width = 256 * max_length
         return self.save()
 
     def _write_rows(self, rows):
         # 初始化最大字符串长度
-        max_length = 0
+        max_length = 3
         for row in rows:
             # 写入单元格的起始列
             start_col = self.start_col
@@ -85,7 +86,7 @@ class XlsCreater(object):
             for cell in row:
                 self.worksheet.write(self.start_row, start_col + cell_num, cell, self.row_style)
                 cell_num += 1
-                max_length = len(cell) if len(str(cell)) > max_length else max_length
+                max_length = len(str(cell)) if len(str(cell)) > max_length else max_length
             self.start_row += 1
         return max_length
 
