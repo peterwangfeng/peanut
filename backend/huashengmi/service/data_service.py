@@ -30,19 +30,27 @@ class DataService(object):
                 i += 1
             return_result['series'] = series
             return return_result
-        else: #查看某一年4季度工资情况
+        else: #查看某一年4季度及全年工资情况
+            budget_result = self.dao.query_year_budget(years[0])
+            budget_info = {}
+            if len(budget_result) > 0:
+                budget_info = budget_result[0]
             series = []
             if len(sql_result) > 0:
                 salary_dict = sql_result.values()[0]
                 sum = 0
                 for season in seasons:
-                    series.append([round(salary_dict[season] / 10000, 2), 0])
+                    if budget_info.has_key(season):
+                        series.append([round(salary_dict[season] / 10000, 2), round(budget_info[season] / 10000, 2)])
+                    else:
+                        series.append([round(salary_dict[season] / 10000, 2), 0])
                     sum += round(salary_dict[season] / 10000, 2)
-                for index in series:
-                    index[1] = sum / 4
-                series.insert(0, [sum, sum])
+                if budget_info.has_key('TOTAL'):
+                    series.insert(0, [sum, round(budget_info['TOTAL'] / 10000, 2)])
+                else:
+                    series.insert(0, [sum, 0])
             else:
-                series = [[0,0]]*len(seasons + 1)
+                series = [[0,0]]*(len(seasons) + 1)
             return_result = {'series' : series}
             return return_result
 
@@ -119,17 +127,17 @@ class DataService(object):
                          'depart_name': depart_name}
         return return_result
 
-    def year_salary(self, year='2017', cur_page=1, page_size=10):
+    def year_salary(self, year='2017', month='', cur_page=1, page_size=10):
         # 因为数据只有两百多条，所以采用全部获取再截取的方式获取分页数据
         start = (cur_page - 1) * page_size
         end = cur_page * page_size
-        return_result = self.dao.query_year_salary(year)
+        return_result = self.dao.query_year_salary(year, month)
         sql_result = DataService.query_yangshi2_result(return_result[0], return_result[1],
                                                        self.depart_short_name_dict, self.jixiao_short_name_dict)
         return {'data': sql_result[start:end], 'total_num': len(sql_result)}
 
-    def year_salary_for_download(self, year='2017'):
-        return_result = self.dao.query_year_salary(year)
+    def year_salary_for_download(self, year='2017', month=''):
+        return_result = self.dao.query_year_salary(year, month)
         sql_result = DataService.query_yangshi2_result(return_result[0], return_result[1],
                                                        self.depart_short_name_dict, self.jixiao_short_name_dict)
         jixiao_dict = {}
