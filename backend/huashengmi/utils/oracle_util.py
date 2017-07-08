@@ -3,6 +3,7 @@ import cx_Oracle
 import config as config
 import datetime
 
+
 class OracleUtil(object):
 
     def __init__(self):
