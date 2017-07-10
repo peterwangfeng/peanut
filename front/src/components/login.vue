@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container-fluid">
     <div class="text-center" style="color: #42d5f6">
       <span class="title">绩效工资分析系统</span>
@@ -47,7 +47,7 @@
     created() {
       let user_name = this.$route.query.user_name;
       let password = this.$route.query.password;
-      if (this.$route.query.password) {
+      if (user_name && password) {
         let url = URL.SINGLE_LOGIN;
         let data = {login_name: user_name, password: password};
         data = JSON.stringify(data);
