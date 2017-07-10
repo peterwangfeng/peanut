@@ -20,27 +20,27 @@
         <el-table-column prop="AQYJB" label="安全运检部" align="center" width="120px"></el-table-column>
         <el-table-column prop="BDGCFGS" label="变电工程分公司" align="center" width="150px"></el-table-column>
         <el-table-column prop="CSYDFWB" label="抄收用电服务部" align="center" width="150px"></el-table-column>
-        <el-table-column prop="DAS" label="档案室" align="center"></el-table-column>
+        <el-table-column prop="DAS" label="档案室" align="center" width="120px"></el-table-column>
         <el-table-column prop="DLDDZX" label="电力调度中心" align="center" width="130px"></el-table-column>
         <el-table-column prop="FZJSB" label="发展建设部" align="center" width="120px"></el-table-column>
-        <el-table-column prop="GCB" label="工程部" align="center"></el-table-column>
+        <el-table-column prop="GCB" label="工程部" align="center" width="120px"></el-table-column>
         <el-table-column prop="QCFGS" label="器材分公司" align="center" width="120px"></el-table-column>
         <el-table-column prop="SDGCFGS" label="输电工程分公司" align="center" width="150px"></el-table-column>
         <el-table-column prop="SJFGS" label="设计分公司" align="center" width="120px"></el-table-column>
         <el-table-column prop="SPDGCFGS" label="输配电工程分公司" align="center" width="160px"></el-table-column>
-        <el-table-column prop="SPDYWFGS" label="输配电运维分公司" align="center" width="160px"></el-table-column>
-        <el-table-column prop="SWB" label="事务部" align="center"></el-table-column>
-        <el-table-column prop="YXB" label="营销部" align="center"></el-table-column>
+        <el-table-column prop="SPDYWFGS" label="输配电运维分公司" align=  "center" width="160px"></el-table-column>
+        <el-table-column prop="SWB" label="事务部" align="center" width="120px"></el-table-column>
+        <el-table-column prop="YXB" label="营销部" align="center" width="120px"></el-table-column>
         <el-table-column prop="ZHFWFGS" label="综合服务分公司" align="center" width="150px"></el-table-column>
         <el-table-column prop="GSLD" label="公司领导" align="center" width="100px"></el-table-column>
         <el-table-column prop="CNYDFWB" label="城南用电服务部" align="center" width="150px"></el-table-column>
         <el-table-column prop="DLGCFWFGS" label="电力工程服务分公司" align="center" width="200px"></el-table-column>
-        <el-table-column prop="SCB" label="市场部" align="center"></el-table-column>
-        <el-table-column prop="CWB" label="财务部" align="center"></el-table-column>
-        <el-table-column prop="GLBM" label="管理部门" align="center" width="100px"></el-table-column>
-        <el-table-column prop="SCDW" label="生产单位" align="center" width="100px"></el-table-column>
+        <el-table-column prop="SCB" label="市场部" align="center" width="120px"></el-table-column>
+        <el-table-column prop="CWB" label="财务部" align="center" width="120px"></el-table-column>
+        <el-table-column prop="GLBM" label="管理部门" align="center" width="120px"></el-table-column>
+        <el-table-column prop="SCDW" label="生产单位" align="center" width="120px"></el-table-column>
         <el-table-column prop="YZHBSYYXGS" label="仪征恒邦实业有限公司" width="200px" align="center"></el-table-column>
-        <el-table-column prop="WYFGS" label="物业分公司" align="center" width="120px"></el-table-column>
+        <el-table-column prop="WYFGS" label="物业分公司" align="center" width="150px"></el-table-column>
         <el-table-column prop="SUM" label="总计" align="center" width="200"></el-table-column>
       </el-table>
     </el-card>
