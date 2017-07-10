@@ -10,3 +10,6 @@ class UserService(object):
     def logout(self,ID):
         return self.dao.logout(ID)
 
+    def one_auth(self,login_name,password):
+        return self.dao.one_auth_login(login_name,password)
+

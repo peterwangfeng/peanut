@@ -29,22 +29,9 @@ class UserLogin(Resource):
         if user_name and password:
             result = self.service.login(user_name, password)
             if result and result[0] is True:
-                if 'type' not in data.keys() \
-                        or int(data['type']) == StatusCode.WEB_LOGIN:
-                    return {'code': StatusCode.LOGIN_SUCCESS, 'data': {'user_name': result[1]['NAME'],
-                                                                       'token': result[1]['TOKEN'],
-                                                                       'user_id': result[1]['ID']}}
-                elif 'type' in data.keys() \
-                        and int(data['type']) == StatusCode.ONE_AUTH_LOGIN:
-                    return {'code': StatusCode.LOGIN_SUCCESS,
-                            'data': {
-                                'user_name': result[1]['NAME'],
-                                'token': result[1]['TOKEN'],
-                                'user_id': result[1]['ID'],
-                                'redirect_url': '/head/first'
-                            }}
-                else:
-                    return {'code': StatusCode.LOGIN_FAIL_PARAMETER_ERROR}
+                return {'code': StatusCode.LOGIN_SUCCESS, 'data': {'user_name': result[1]['NAME'],
+                                                                   'token': result[1]['TOKEN'],
+                                                                   'user_id': result[1]['ID']}}
             else:
                 return {'code': result[1]}
         else:
@@ -55,8 +42,8 @@ class UserLogout(Resource):
     def __init__(self):
         self.service = UserService()
 
-    @marshal_with(response)
     @auth.login_required
+    @marshal_with(response)
     def post(self):
         '''处理注销请求，删除数据库存储的token'''
         data = request.json
@@ -67,3 +54,32 @@ class UserLogout(Resource):
             return {'code': StatusCode.LOGOUT_SUCCESS}
         else:
             return {'code': StatusCode.LOGOUT_FAIL}
+
+class OneAuthLogin(Resource):
+    def __init__(self):
+        self.service = UserService()
+
+    @marshal_with(response)
+    def post(self):
+        '''
+        返回登陆状态码，登陆成功则返回用户信息
+        :return: dict
+        '''
+        data = request.json
+        try:
+            user_name = data['login_name']
+            password = data['password']
+        except Exception as e:
+            print e
+            return {'code': StatusCode.LOGIN_FAIL_PARAMETER_ERROR}
+
+        if user_name and password:
+            result = self.service.one_auth(user_name, password)
+            if result and result[0] is True:
+                return {'code': StatusCode.LOGIN_SUCCESS, 'data': {'user_name': result[1]['NAME'],
+                                                                   'token': result[1]['TOKEN'],
+                                                                   'user_id': result[1]['ID']}}
+            else:
+                return {'code': result[1]}
+        else:
+            return {'code': StatusCode.LOGIN_FAIL_PASSWORD_ERROR}

@@ -48,8 +48,8 @@ class JiduSalary(Resource):
         self.service = DataService()
 
     # 数据接口请求
-    @marshal_with(response)
     @auth.login_required
+    @marshal_with(response)
     def get(self):
         """
         返回各季度总工资情况
@@ -67,8 +67,8 @@ class DepartAndMonth(Resource):
         self.service = DataService()
 
     # 数据接口请求
-    @marshal_with(response)
     @auth.login_required
+    @marshal_with(response)
     def get(self):
         """
         返回各部门各月份工资情况
@@ -94,8 +94,8 @@ class DepartAndCategory(Resource):
         self.service = DataService()
 
     # 数据接口请求
-    @marshal_with(response)
     @auth.login_required
+    @marshal_with(response)
     def get(self):
         """
         返回单月各部门各项工资情况
@@ -119,8 +119,8 @@ class YearSalary(Resource):
         self.service = DataService()
 
     # 数据接口请求
-    @marshal_with(response)
     @auth.login_required
+    @marshal_with(response)
     def get(self):
         """
         返回员工年度工资汇总
@@ -149,8 +149,8 @@ class GetDepart(Resource):
         self.service = DataService()
 
     # 数据接口请求
-    @marshal_with(response)
     @auth.login_required
+    @marshal_with(response)
     def get(self):
         """
         返回部门名称表

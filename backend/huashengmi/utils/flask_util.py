@@ -1,5 +1,5 @@
 # coding=utf-8
-from flask import g
+from flask import g,make_response,jsonify
 from flask_restful import fields
 import json
 import datetime
@@ -8,6 +8,7 @@ from datetime import date
 import time, hmac, base64, hashlib
 from flask_httpauth import HTTPTokenAuth
 from oracle_util import OracleUtil
+from config import StatusCode
 
 
 class CJsonEncoder(json.JSONEncoder):
@@ -41,7 +42,7 @@ class Factory(object):
 
 
 class Token(object):
-    def generate_token(self, key, expire=3600):
+    def generate_token(self, key, expire=21600):
         ts_str = str(time.time() + expire)
         ts_byte = ts_str.encode('utf-8')
         sha1_tshexstr = hmac.new(key.encode('utf-8'), ts_byte).hexdigest()
@@ -87,6 +88,16 @@ class Verify(object):
         else:
             return False
 
+    @staticmethod
+    def one_auth_verify(password,encrypted_password):
+        sha1_password=hashlib.sha1(encrypted_password.decode('hex')).hexdigest()
+        if sha1_password ==password:
+            return True
+        else:
+            return False
+
+
+
 
 auth = HTTPTokenAuth(scheme='Token')
 
@@ -105,3 +116,7 @@ def verify_token(token):
         return True
     else:
         return False
+
+@auth.error_handler
+def error_handler():
+    return make_response(jsonify({"code": StatusCode.TOKEN_EXPIRED, "msg": "token认证失败","data":{}}))
