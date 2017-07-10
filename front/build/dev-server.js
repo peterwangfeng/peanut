@@ -25,7 +25,7 @@ var compiler = webpack(webpackConfig)
 var options = {
   // target host
   // target: 'http://155.36.0.235:8080',
-  target: 'http://192.168.0.117:5000',
+  target: 'http://192.168.0.134:5000',
   // target: 'http://192.168.0.136:5000',
   changeOrigin: true,               // needed for virtual hosted sites
   ws: true                        // proxy websockets

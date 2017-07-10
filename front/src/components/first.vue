@@ -171,7 +171,7 @@
           },
           series: [
             {
-              name: '当前已使用',
+              name: '本年已使用',
               type: 'gauge',
               z: 5,
               min: 0,

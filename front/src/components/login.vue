@@ -44,9 +44,30 @@
         loading: false
       };
     },
+    created() {
+      let user_name = this.$route.query.user_name;
+      let password = this.$route.query.password;
+      if (this.$route.query.password) {
+        let url = URL.SINGLE_LOGIN;
+        let data = {login_name: user_name, password: password};
+        data = JSON.stringify(data);
+        this.$http.post(url, data).then(res => {
+          if (res.data.code === 100) {
+            let target = res.data.data;
+            window.localStorage.setItem('token', target.token);
+            window.localStorage.setItem('name', target.user_name);
+            window.localStorage.setItem('user_id', target.user_id);
+            this.$router.push({path: '/home/first'});
+          } else if (res.data.code === 2001) {
+            this.$message('用户名不存在');
+          } else if (res.data.code === 2002) {
+//            this.$message('密码错误,请重新输入');
+          }
+        });
+      }
+    },
     methods: {
       login() {
-//        this.$router.push({path: '/home/first'});
         this.loading = true;
         let regex = /[a-zA-Z0-9]/g;
         let regexName = regex.test(this.user.name);
@@ -59,7 +80,6 @@
             this.loading = false;
             if (res.data.code === 100) {
               let target = res.data.data;
-              console.log(target);
               window.localStorage.setItem('token', target.token);
               window.localStorage.setItem('name', target.user_name);
               window.localStorage.setItem('user_id', target.user_id);
