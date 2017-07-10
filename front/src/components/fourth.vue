@@ -134,7 +134,6 @@
           let params = {year: year, month: month, cur_page: currentPage, page_size: 10};
           api.get(url, params).then(res => {
             this.loading = false;
-            window.console.log(res);
             this.tableData = res.data;
             this.total = res.total_num;
           }).catch(err => {
@@ -146,10 +145,9 @@
           let params = {year: year, cur_page: currentPage, page_size: 10};
           api.get(url, params).then(res => {
             this.loading = false;
-            window.console.log(res);
             this.tableData = res.data;
             this.total = res.total_num;
-          }).catch(err => {
+          }).logi(err => {
             this.loading = false;
           });
         }

@@ -11,6 +11,7 @@ const URL = {
   DEPART_CATEGARY: baseURL + 'depart_category/',
   YEAR_SALARY: baseURL + 'year_salary/',
   DOWNLOAD: baseURL + 'download/',
-  GET_DEPART: baseURL + 'get_depart/'
+  GET_DEPART: baseURL + 'get_depart/',
+  SINGLE_LOGIN: baseURL + 'one_auth_login/'
 };
 export default URL;

@@ -8,6 +8,7 @@ import Second from '@/components/second';
 import Third from '@/components/third';
 import Fourth from '@/components/fourth';
 import {MessageBox} from 'element-ui';
+import {Notification} from 'element-ui';
 Vue.use(Router);
 Vue.use(VueResource);
 
@@ -49,14 +50,18 @@ Vue.http.interceptors.push((request, next) => {
   Vue.http.headers.common['Authorization'] = `Token ${Token}`;
   next(response => {
     let status = String(response.status);
-    if (status.indexOf('4') === 0) {
-      this.$message(
-        {type: 'info', message: '客户端错误'}
-      );
-    } else if (status.indexOf('5') === 0) {
-      this.$message({
-        type: 'info', message: '服务器错误'
+    let code = response.data.code;
+    if (code === 2005) {
+      Notification.warning({
+        title: '提示',
+        message: '验证过期,请重新登录',
       });
+      router.push({name: 'login'});
+    }
+    if (status.indexOf('4') === 0) {
+      // MessageBox({ title: '错误', message: '请求错误' });
+    } else if (status.indexOf('5') === 0) {
+      MessageBox({title: '错误', message: '服务器错误'});
     }
     return response;
   });

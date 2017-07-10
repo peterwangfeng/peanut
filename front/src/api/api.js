@@ -1,9 +1,9 @@
 /**
  * Created by peter on 2017-07-03.
  */
-import Vue from 'vue'
-import VueResource from 'vue-resource'
-Vue.use(VueResource)
+import Vue from 'vue';
+import VueResource from 'vue-resource';
+Vue.use(VueResource);
 
 export const get = function (url, params) {
   return new Promise((resolve, reject) => {
