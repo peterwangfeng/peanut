@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from controller.controller import JiduSalary, DepartAndMonth, DepartAndCategory, YearSalary, Download, GetDepart
 from config import BASE_URL
-from controller.user_controller import UserLogin, UserLogout
+from controller.user_controller import UserLogin, UserLogout,OneAuthLogin
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -37,6 +37,8 @@ api.add_resource(UserLogin, BASE_URL + 'login/')
 api.add_resource(UserLogout, BASE_URL + 'logout/')
 # 获取部门名称对应ID
 api.add_resource(GetDepart, BASE_URL + 'get_depart/')
+# 单点登陆接口
+api.add_resource(OneAuthLogin, BASE_URL + 'one_auth_login/')
 
 if __name__ == '__main__':
     logger.info('启动app')

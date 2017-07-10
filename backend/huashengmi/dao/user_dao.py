@@ -57,3 +57,28 @@ class UserDao(object):
         self.cursor.execute(sql)
         self.con.commit()
         return True
+
+    def one_auth_login(self,login_name,enc_password):
+        sql = "select ID,LOGIN_NAME,NAME,PASSWORD from OA.SYS_USER WHERE LOGIN_NAME = '%s'" % login_name
+        self.cursor.execute(sql)
+        result = OracleUtil.query_list_result(self.cursor, sql)
+        try:
+            if not result:
+                # 未查到则返回false
+                return False, StatusCode.LOGIN_FAIL_USER_NOT_FOUND
+            for user in result:
+                db_password = user['PASSWORD']
+                user_id = user['ID']
+                if Verify.one_auth_verify(enc_password,db_password):
+                    user_token = self.setToken(user_id)
+                    user['TOKEN'] = user_token
+                    return True, user
+            return False, StatusCode.LOGIN_FAIL_PASSWORD_ERROR
+        except Exception as e:
+            return False, StatusCode.LOGIN_FAIL_PASSWORD_ERROR
+
+
+if __name__ == '__main__':
+    login_name=u'swb'
+    enc_password=u'cd04cb32656cf74938e22bd9722fead3af6d532a'
+    b=UserDao().one_auth_login(login_name,enc_password)

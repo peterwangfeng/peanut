@@ -96,3 +96,5 @@ class StatusCode(object):
     WEB_LOGIN = 1
 
     ONE_AUTH_LOGIN = 2
+
+    TOKEN_EXPIRED = 2005
