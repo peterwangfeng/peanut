@@ -1,6 +1,7 @@
 # coding=utf-8
-import sys
-
+import sys,os
+sys.path.append(os.path.abspath('%s/../..' % sys.path[0]))
+sys.path.append(os.path.abspath('%s/..' % sys.path[0]))
 import logging
 from flask import Flask
 from flask_cors import CORS
@@ -40,6 +41,10 @@ api.add_resource(GetDepart, BASE_URL + 'get_depart/')
 # 单点登陆接口
 api.add_resource(OneAuthLogin, BASE_URL + 'one_auth_login/')
 
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
 if __name__ == '__main__':
     logger.info('启动app')
-    app.run(host="0.0.0.0", threaded=True, debug=True)
+    app.run(host="0.0.0.0",port=80, threaded=True, debug=True)
