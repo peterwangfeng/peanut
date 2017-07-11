@@ -4,21 +4,13 @@
     <div style="text-align: right">
       <el-button :type="type==='year'?'primary':''" @click="handleType('year')">按年</el-button>
       <el-button :type="type==='month'?'primary':''" @click="handleType('month')">按月</el-button>
-      <el-date-picker
-        v-model="value1"
-        align="right"
-        :type="type"
-        @change="handle"
-        :clearable="false"
-        placeholder="选择日期">
+      <el-date-picker v-model="value1" align="right" :type="type" @change="handle" :clearable="false" placeholder="选择日期">
       </el-date-picker>&nbsp;
       <el-button style='margin-bottom:20px;float:right' type="primary" @click="handleDownload">
-        <img src="../assets/icon_export.png" alt="">
-        导出excel
+        <img src="../assets/icon_export.png" alt=""> 导出excel
       </el-button>
     </div>
-    <el-table :data="tableData" style="width: 100%;" border :row-class-name="tableRowClassName" v-loading="loading"
-              element-loading-text="拼命加载中">
+    <el-table :data="tableData" style="width: 100%;" border :row-class-name="tableRowClassName" v-loading="loading" element-loading-text="拼命加载中">
       <el-table-column label="员工编号" prop="USER_ID" fixed="left" width="120" align="center"></el-table-column>
       <el-table-column label="部门" prop="OFFICE_ID" fixed="left" width="200" align="center"></el-table-column>
       <el-table-column label="姓名" fixed="left" prop="NAME" width="100" align="center"></el-table-column>
@@ -67,9 +59,9 @@
       </el-table-column>
       <el-table-column label="应发合计" prop="SUM" width="100"></el-table-column>
       <!--<el-table-column label="扣款" align="center">
-        <el-table-column label="扣款" prop="kk" align="center"></el-table-column>
-        <el-table-column label="扣税" prop="ks" align="center"></el-table-column>
-      </el-table-column>-->
+            <el-table-column label="扣款" prop="kk" align="center"></el-table-column>
+            <el-table-column label="扣税" prop="ks" align="center"></el-table-column>
+          </el-table-column>-->
       <el-table-column label="四险一金" prop="center" align="center">
         <el-table-column label="扣养老" prop="JBYLBX1" align="center" width="90"></el-table-column>
         <el-table-column label="扣医保" prop="JBYLBX2" align="center" width="90"></el-table-column>
@@ -83,161 +75,159 @@
   </el-card>
 </template>
 <script>
-  import URL from '../api/url';
-  import * as api from '../api/api';
-  import Pagination from './pagination';
-  export default {
-    name: 'first',
-    components: {
-      Pagination
-    },
-    data() {
-      return {
-        type: 'year',
-        value1: new Date(),
-        loading: true,
-        tableData: [],
-        total: null
-      };
-    },
-    created() {
+import URL from '../api/url';
+import * as api from '../api/api';
+import Pagination from './pagination';
+export default {
+  name: 'first',
+  components: {
+    Pagination
+  },
+  data() {
+    return {
+      type: 'year',
+      value1: new Date(),
+      loading: true,
+      tableData: [],
+      total: null
+    };
+  },
+  created() {
+    this.init();
+  },
+  methods: {
+    handleType(value) {
+      this.type = value;
       this.init();
     },
-    methods: {
-      handleType(value) {
-        this.type = value;
-        this.init();
-      },
-      handle(value) {
-        this.loading = true;
-        this.init();
-      },
-      tableRowClassName(row, index) {
-        if (index % 2 === 1) {
-          return 'info-row';
-        } else if (index % 2 === 0) {
-          return 'positive-row';
-        }
-        return '';
-      },
-      init(currentPage = 1) {
-        if (this.value1 === null || this.value1 === undefined) {
-          this.loading = false;
-          return;
-        }
-
-        let url = URL.YEAR_SALARY;
-        if (this.type === 'month') {
-          let year = this.value1.getFullYear();
-          let month = this.value1.getMonth() + 1;
-          month = month < 10 ? `0${month}` : month;
-          let params = {year: year, month: month, cur_page: currentPage, page_size: 10};
-          api.get(url, params).then(res => {
-            this.loading = false;
-            this.tableData = res.data;
-            this.total = res.total_num;
-          }).catch(err => {
-            this.loading = false;
-          });
-        } else if (this.type === 'year') {
-          let year = this.value1.getFullYear();
-          let month = this.value1.getMonth();
-          let params = {year: year, cur_page: currentPage, page_size: 10};
-          api.get(url, params).then(res => {
-            this.loading = false;
-            this.tableData = res.data;
-            this.total = res.total_num;
-          }).logi(err => {
-            this.loading = false;
-          });
-        }
-
-      },
-      next(currentPage) {
-        this.loading = true;
-        this.init(currentPage);
-      },
-      handleDownload() {
+    handle(value) {
+      this.loading = true;
+      this.init();
+    },
+    tableRowClassName(row, index) {
+      if (index % 2 === 1) {
+        return 'info-row';
+      } else if (index % 2 === 0) {
+        return 'positive-row';
+      }
+      return '';
+    },
+    init(currentPage = 1) {
+      if (this.value1 === null || this.value1 === undefined) {
+        this.loading = false;
+        return;
+      }
+      let url = URL.YEAR_SALARY;
+      if (this.type === 'month') {
         let year = this.value1.getFullYear();
         let month = this.value1.getMonth() + 1;
         month = month < 10 ? `0${month}` : month;
-        if (this.type === 'year') {
-          location.href = `${URL.DOWNLOAD}?year=${year}`;
-        } else if (this.type === 'month')
-          location.href = `${URL.DOWNLOAD}?year=${year}&month=${month}`;
+        let params = { year: year, month: month, cur_page: currentPage, page_size: 10 };
+        api.get(url, params).then(res => {
+          this.loading = false;
+          this.tableData = res.data;
+          this.total = res.total_num;
+        }).catch(err => {
+          this.loading = false;
+        });
+      } else if (this.type === 'year') {
+        let year = this.value1.getFullYear();
+        let month = this.value1.getMonth();
+        let params = { year: year, cur_page: currentPage, page_size: 10 };
+        api.get(url, params).then(res => {
+          this.loading = false;
+          this.tableData = res.data;
+          this.total = res.total_num;
+        }).catch(err => {
+          this.loading = false;
+        });
       }
+    },
+    next(currentPage) {
+      this.loading = true;
+      this.init(currentPage);
+    },
+    handleDownload() {
+      let year = this.value1.getFullYear();
+      let month = this.value1.getMonth() + 1;
+      month = month < 10 ? `0${month}` : month;
+      if (this.type === 'year') {
+        location.href = `${URL.DOWNLOAD}?year=${year}`;
+      } else if (this.type === 'month')
+        location.href = `${URL.DOWNLOAD}?year=${year}&month=${month}`;
     }
-  };
+  }
+};
 </script>
 <style>
-  h3 {
-    color: #42d5f6;
-    margin-bottom: 10px;
-  }
+h3 {
+  color: #42d5f6;
+  margin-bottom: 10px;
+}
 
-  th.is-center.is-leaf {
-    color: #fff;
-    background-color: #20a0ff;
-  }
+th.is-center.is-leaf {
+  color: #fff;
+  background-color: #20a0ff;
+}
 
-  th.is-center.is-leaf div {
-    color: #fff;
-    background-color: #20a0ff;
-  }
+th.is-center.is-leaf div {
+  color: #fff;
+  background-color: #20a0ff;
+}
 
-  img {
-    width: 12px;
-    position: relative;
-    top: -2px;
-    height: 12px;
-  }
+img {
+  width: 12px;
+  position: relative;
+  top: -2px;
+  height: 12px;
+}
 
-  .el-card {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    text-align: center;
-    border-radius: 10px;
-  }
+.el-card {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 10px;
+}
 
-  .el-table__header-wrapper {
-    color: #fff !important;
-    background-color: #20a0ff !important;
-  }
+.el-table__header-wrapper {
+  color: #fff !important;
+  background-color: #20a0ff !important;
+}
 
-  .el-table__header-wrapper .is-leaf {
-    color: #fff !important;
-    background-color: #20a0ff !important;
-  }
+.el-table__header-wrapper .is-leaf {
+  color: #fff !important;
+  background-color: #20a0ff !important;
+}
 
-  .el-table__header-wrapper .is-leaf div {
-    color: #fff !important;
-    background-color: #20a0ff !important;
-  }
+.el-table__header-wrapper .is-leaf div {
+  color: #fff !important;
+  background-color: #20a0ff !important;
+}
 
-  .el-table__header-wrapper .is-center {
-    color: #fff !important;
-    background-color: #20a0ff !important;
-  }
+.el-table__header-wrapper .is-center {
+  color: #fff !important;
+  background-color: #20a0ff !important;
+}
 
-  .el-table__header-wrapper div {
-    color: #fff !important;
-    background-color: #20a0ff !important;
-  }
+.el-table__header-wrapper div {
+  color: #fff !important;
+  background-color: #20a0ff !important;
+}
 
-  .el-table__header-wrapper div {
-    color: #fff !important;
-    background-color: #20a0ff !important;
-  }
+.el-table__header-wrapper div {
+  color: #fff !important;
+  background-color: #20a0ff !important;
+}
 
-  .el-table {
-    margin-top: -10px !important;
-  }
+.el-table {
+  margin-top: -10px !important;
+}
 
-  .el-table .info-row {
-    background: rgb(43, 179, 255) !important;
-  }
+.el-table .info-row {
+  background: rgb(43, 179, 255) !important;
+}
 
-  .el-table .positive-row {
-    background: #fafafa !important;
-  }
+.el-table .positive-row {
+  background: #fafafa !important;
+}
 </style>
