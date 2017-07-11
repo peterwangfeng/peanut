@@ -7,7 +7,6 @@ from utils.flask_util import response, CJsonEncoder, auth
 from utils.oracle_util import OracleUtil
 import json
 import time
-import tablib
 from config import conf_of_excel
 
 
