@@ -1,6 +1,6 @@
 <template>
   <el-card>
-    <h3 class="text-center">年收入汇总表</h3>
+    <h3 class="text-center" style="color: #42d5f6">年收入汇总表</h3>
     <div style="text-align: right">
       <el-button :type="type==='year'?'primary':''" @click="handleType('year')">按年</el-button>
       <el-button :type="type==='month'?'primary':''" @click="handleType('month')">按月</el-button>
